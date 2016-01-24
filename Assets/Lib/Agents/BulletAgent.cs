@@ -1,4 +1,5 @@
 ﻿using SpaceGame.Actors;
+using SpaceGame.Reporters;
 
 namespace SpaceGame.Agents
 {
@@ -6,7 +7,9 @@ namespace SpaceGame.Agents
     {
         void Awake ()
         {
-            actor = new Bullet( this );
+            BulletCollisionReporter collisions = GetComponent<BulletCollisionReporter>();
+
+            actor = new Bullet( this, collisions );
         }
     }
 }

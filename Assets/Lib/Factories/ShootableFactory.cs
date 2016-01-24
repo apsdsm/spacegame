@@ -8,7 +8,7 @@ using Fletch;
 namespace SpaceGame.Factories
 {
 
-    public class BulletFactory : MonoBehaviour, IBulletFactory
+    public class ShootableFactory : MonoBehaviour, IBulletFactory
     {
         [Tooltip( "The bullet prefab spawned for the player." )]
         public GameObject playerBullet;

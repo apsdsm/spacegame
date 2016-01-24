@@ -5,10 +5,10 @@ using TestHelpers;
 namespace SpaceGame.Tests.Integration.BulletFactoryTests
 {
 
-    class bullet_factory_test : UTestCase
+    class shootable_factory_test : UTestCase
     {
         // system under test
-        protected BulletFactory bullet_factory;
+        protected ShootableFactory bullet_factory;
 
         // game object
         protected GameObject bullet_factory_object;
@@ -19,7 +19,7 @@ namespace SpaceGame.Tests.Integration.BulletFactoryTests
         override public void SetUp ()
         {
             bullet_factory_object = GameObject.Find( "BulletFactory" );
-            bullet_factory = bullet_factory_object.GetComponent<BulletFactory>();
+            bullet_factory = bullet_factory_object.GetComponent<ShootableFactory>();
         }
     }
 }

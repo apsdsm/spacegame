@@ -4,8 +4,8 @@ using SpaceGame.Interfaces;
 namespace SpaceGame.Tests.Integration.ShipFactoryTests
 {
 
-    [IntegrationTest.DynamicTest( "ShipFactoryTests" )]
-    class it_creates_a_new_player_ship_object : ship_factory_test
+    [IntegrationTest.DynamicTest( "PhysicalFactoryTests" )]
+    class it_creates_a_new_player_ship_object : physical_factory_test
     {
         void Test ()
         {

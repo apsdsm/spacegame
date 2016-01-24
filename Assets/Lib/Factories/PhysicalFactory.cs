@@ -6,7 +6,7 @@ using Fletch;
 
 namespace SpaceGame.Factories
 {
-    public class ShipFactory : MonoBehaviour, IShipFactory
+    public class PhysicalFactory : MonoBehaviour, IShipFactory
     {
         /// <summary>
         /// Instantiate and return a Player Ship object.

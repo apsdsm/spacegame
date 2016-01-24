@@ -8,13 +8,26 @@ namespace SpaceGame.Actors
     public class Bullet : IUpdatable, IShootable
     {
         IAgent agent;
+
+        IBulletCollisionReporter collisions;
         
         [Tooltip("speed that the bullet will travel at.")]
         public float speed = 20.0f;
 
-        public Bullet ( IAgent agent )
+        [Tooltip("maximum life time for bullet.")]
+        public float lifespan = 3.0f;
+
+        // time that has ellapsed since bullet was fired
+        private float timeSinceFired = 0.0f;
+
+        // true while bullet is shooting
+        private bool isShooting = false;
+
+        public Bullet ( IAgent agent,
+                        IBulletCollisionReporter collisions )
         {
             this.agent = agent;
+            this.collisions = collisions;
         }
 
         /// <summary>
@@ -25,15 +38,34 @@ namespace SpaceGame.Actors
         {
             agent.Position = startingPosition;
             agent.Forward = direction;
+            isShooting = true;
         }
 
         /// <summary>
-        /// Updates the bullet - shooting it along its trajectory.
+        /// If the bullet is shooting, will move it along its trajectory. If the bullet will hit
+        /// any enemy this update, will damage that enemy.
         /// </summary>
         /// <param name="deltaTime">time passed since last update</param>
         public void Update ( float deltaTime = 0.0f )
         {
-            agent.Position = agent.Position + agent.Forward * speed * deltaTime;
+            if ( !isShooting )
+            {
+                return;
+            }
+
+            timeSinceFired += deltaTime;
+
+            if ( timeSinceFired >= lifespan )
+            {
+                isShooting = false;
+                agent.Destroy();
+            }
+            else
+            {
+
+                agent.Position = agent.Position + agent.Forward * speed * deltaTime;
+                // check for collisions
+            }
         }
     }
 }

@@ -13,13 +13,15 @@ namespace SpaceGame.Tests.Unit.Actors
         Bullet bullet;
 
         IAgent agent;
+        IBulletCollisionReporter collisions;
 
         [SetUp]
         public void setup ()
         {
             agent = Substitute.For<IAgent>();
+            collisions = Substitute.For<IBulletCollisionReporter>();
 
-            bullet = new Bullet( agent );
+            bullet = new Bullet( agent, collisions );
         }
 
         [Test]
@@ -32,6 +34,18 @@ namespace SpaceGame.Tests.Unit.Actors
             bullet.Update( 1.0f );
 
             agent.Received().Position = (Vector3.forward * 10.0f * 1.0f);
+        }
+
+        [Test]
+        public void it_vanishes_when_it_reaches_its_range ()
+        {
+            bullet.speed = 10.0f;
+
+            bullet.Shoot( Vector3.zero, Vector3.forward );
+
+            bullet.Update( 3.0f );
+
+            agent.Received().Destroy();
         }
     }
 }

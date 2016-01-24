@@ -3,8 +3,8 @@
 namespace SpaceGame.Tests.Integration.ShipFactoryTests
 {
 
-    [IntegrationTest.DynamicTest( "ShipFactoryTests" )]
-    class it_creates_new_ships_as_child_game_objects : ship_factory_test
+    [IntegrationTest.DynamicTest( "PhysicalFactoryTests" )]
+    class it_creates_new_ships_as_child_game_objects : physical_factory_test
     {
         void Test ()
         {

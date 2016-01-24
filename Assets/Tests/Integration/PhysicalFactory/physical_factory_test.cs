@@ -5,10 +5,10 @@ using TestHelpers;
 namespace SpaceGame.Tests.Integration.ShipFactoryTests
 {
 
-    class ship_factory_test : UTestCase
+    class physical_factory_test : UTestCase
     {
         // sut
-        protected ShipFactory ship_factory;
+        protected PhysicalFactory ship_factory;
 
         // game object
         protected GameObject ship_factory_object;
@@ -19,7 +19,7 @@ namespace SpaceGame.Tests.Integration.ShipFactoryTests
         override public void SetUp ()
         {
             ship_factory_object = GameObject.Find( "ShipFactory" );
-            ship_factory = ship_factory_object.GetComponent<ShipFactory>();
+            ship_factory = ship_factory_object.GetComponent<PhysicalFactory>();
         }
     }
 }

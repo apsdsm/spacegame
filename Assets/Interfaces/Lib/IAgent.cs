@@ -36,5 +36,10 @@ namespace SpaceGame.Interfaces
         /// </summary>
         Vector3 Right
         { get; set; }
+
+        /// <summary>
+        /// Destroy the object containing the agent.
+        /// </summary>
+        void Destroy ();
     }
 }
