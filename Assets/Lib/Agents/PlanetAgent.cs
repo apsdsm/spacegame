@@ -1,4 +1,5 @@
 ﻿using SpaceGame.Actors;
+using SpaceGame.Controllers;
 using SpaceGame.Reporters;
 
 namespace SpaceGame.Agents
@@ -7,8 +8,9 @@ namespace SpaceGame.Agents
     {
         void Awake ()
         {
-            PlanetSizeReporter size = GetComponent<PlanetSizeReporter>();
-            actor = new Planet( this, size );
+            actor = new Planet( this, 
+                                GetComponent<TransformController>(),
+                                GetComponent<PlanetSizeReporter>() );
         }
     }
 }

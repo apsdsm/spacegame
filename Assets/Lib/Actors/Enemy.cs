@@ -11,19 +11,23 @@ namespace SpaceGame.Actors
         IAgent agent;
 
         // controllers
-        IPhysicsController ship;
+        ITransformController transform;
+        IPhysicsController physics;
 
         /// <summary>
         /// Create a new enemy.
         /// </summary>
         /// <param name="agent">controlling agent</param>
-        public Enemy ( IAgent agent, IPhysicsController ship )
+        public Enemy ( IAgent agent, 
+                       ITransformController transform,
+                       IPhysicsController physics )
         {
             // agent
             this.agent = agent;
 
             // controllers
-            this.ship = ship;
+            this.transform = transform;
+            this.physics = physics;
         }
 
         /// <summary>
@@ -32,7 +36,7 @@ namespace SpaceGame.Actors
         /// <returns></returns>
         public Vector3 GetPosition ()
         {
-            return agent.Position;
+            return transform.Position;
         }
 
         /// <summary>
@@ -41,7 +45,7 @@ namespace SpaceGame.Actors
         /// <param name="position">position as Vector3</param>
         public void SetPosition ( Vector3 position )
         {
-            agent.Position = position;
+            transform.Position = position;
         }
 
         /// <summary>
@@ -50,7 +54,7 @@ namespace SpaceGame.Actors
         /// <param name="force"></param>
         public void AddForce ( Vector3 force )
         {
-            ship.AddForce( force );
+            physics.AddForce( force );
         }
 
     }

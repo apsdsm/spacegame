@@ -21,10 +21,10 @@ namespace SpaceGame.Factories
         {
             if ( playerBullet != null )
             {
-                GameObject newBullet = Instantiate( playerBullet );
-                IShootable bullet = newBullet.GetComponent<BulletAgent>().Actor;
+                GameObject gameObject = Instantiate( playerBullet );
+                IShootable shootable = gameObject.GetComponent<Projectile>();
 
-                return bullet;
+                return shootable;
             }
 
             return null;

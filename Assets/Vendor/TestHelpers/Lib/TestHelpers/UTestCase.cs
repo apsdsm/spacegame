@@ -10,6 +10,9 @@ namespace TestHelpers
     /// </summary>
     public class UTestCase : MonoBehaviour
     {
+        // true if test is finished and should not longer update
+        private bool finished = false;
+
         // true if 'TestIfReady' can be called.
         private bool readyToStart = false;
 
@@ -117,6 +120,11 @@ namespace TestHelpers
         /// </summary>
         void Update ()
         {
+            if ( finished )
+            {
+                return;
+            }
+
             TryInvokeTestMethod( testOnceMethod );
 
             TryInvokeTestMethod( testEachMethod );
@@ -144,8 +152,7 @@ namespace TestHelpers
 
             if ( madeSuccessfulAssertion )
             {
-                IntegrationTest.Pass();
-                TearDown();
+                Pass();
             }
         }
         
@@ -184,6 +191,7 @@ namespace TestHelpers
         /// </summary>
         public void Pass ()
         {
+            finished = true;
             IntegrationTest.Pass();
             TearDown();
         }
@@ -195,7 +203,6 @@ namespace TestHelpers
         /// <param name="message">optional message to pass if check fails</param>
         public void AssertThat ( bool condition, string message="" )
         {
-
             IntegrationTest.Assert( condition, message );
 
             if ( condition == true )
@@ -216,8 +223,6 @@ namespace TestHelpers
         public void AssertSimilar ( float a, float b, float epsilon = 0.01f, string message = "" )
         {
             float remainder = Mathf.Abs( a - b );
-
-            remainder = remainder < 0 ? -remainder : remainder;
 
             IntegrationTest.Assert( remainder < epsilon );
 

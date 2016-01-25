@@ -9,6 +9,9 @@ namespace SpaceGame.Actors
         // agent
         private IAgent agent;
 
+        // controllers
+        private ITransformController transform;
+
         // services
         private IGravityService gravity;
         private IRegistryService registry;
@@ -21,13 +24,17 @@ namespace SpaceGame.Actors
         /// </summary>
         /// <param name="agent"></param>
         /// <param name="registry"></param>
-        public Planet ( IAgent agent, 
+        public Planet ( IAgent agent,
+                        ITransformController transform, 
                         IPlanetSizeReporter size,
                         IGravityService gravity = null,
                         IRegistryService registry = null )
         {
             // agent
             this.agent = agent;
+
+            // controllers
+            this.transform = transform;
 
             // reporters
             this.size = size;
@@ -51,7 +58,7 @@ namespace SpaceGame.Actors
                 return;
             }
 
-            Vector3 position = agent.Position;
+            Vector3 position = transform.Position;
 
             foreach ( IPhysical target in gravity.GetTargets() )
             {

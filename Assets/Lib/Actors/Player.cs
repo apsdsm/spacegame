@@ -21,18 +21,20 @@ namespace SpaceGame.Actors
         IRegistryService registry;
 
         // controllers
-        IPhysicsController ship;
+        ITransformController transform;
+        IPhysicsController physics;
 
         /// <summary>
         /// Set up a new player object.
         /// </summary>
         /// <param name="agent">agent responsible for the player</param>
-        /// <param name="ship">ship controller</param>
+        /// <param name="physics">ship controller</param>
         /// <param name="input">input service</param>
         /// <param name="gravity">gravity service</param>
         /// <param name="registry">registry service</param>
-        public Player ( IAgent agent, 
-                        IPhysicsController ship,
+        public Player ( IAgent agent,
+                        ITransformController transform,
+                        IPhysicsController physics,
                         IBulletFactory bullets = null,
                         IInputService input = null,
                         IGravityService gravity = null,
@@ -42,7 +44,8 @@ namespace SpaceGame.Actors
             this.agent = agent;
 
             // controllers
-            this.ship = ship;
+            this.transform = transform;
+            this.physics = physics;
 
             // factories
             this.bullets = bullets ?? IOC.Resolve<IBulletFactory>();
@@ -64,13 +67,13 @@ namespace SpaceGame.Actors
         {
             Vector2 movement = input.GetMovement();
 
-            ship.AddRelativeForce( new Vector3( 0.0f, 0.0f, movement.y ) );
-            ship.AddRelativeTorque( new Vector3( 0.0f, movement.x, 0.0f ) );
+            physics.AddRelativeForce( new Vector3( 0.0f, 0.0f, movement.y ) );
+            physics.AddRelativeTorque( new Vector3( 0.0f, movement.x, 0.0f ) );
 
             if ( input.GetWeaponFired() )
             {
                 IShootable bullet = bullets.CreatePlayerBullet();
-                bullet.Shoot( agent.Position + agent.Forward * 1.0f, agent.Forward );
+                bullet.Shoot( transform.Position + transform.Forward * 1.0f, transform.Forward );
             }
         }
 
@@ -80,7 +83,7 @@ namespace SpaceGame.Actors
         /// <returns></returns>
         public Vector3 GetPosition()
         {
-            return agent.Position;
+            return transform.Position;
         }
 
         /// <summary>
@@ -89,7 +92,7 @@ namespace SpaceGame.Actors
         /// <param name="position"></param>
         public void SetPosition ( Vector3 position )
         {
-            agent.Position = position;
+            transform.Position = position;
         }
 
         /// <summary>
@@ -98,7 +101,7 @@ namespace SpaceGame.Actors
         /// <param name="force">vector representing force to add to player.</param>
         public void AddForce ( Vector3 force )
         {
-            ship.AddForce( force );
+            physics.AddForce( force );
         }
     }
 }

@@ -7,8 +7,9 @@ namespace SpaceGame.Agents
     {
         void Awake ()
         {
-            PhysicsController ship = GetComponent<PhysicsController>();
-            actor = new Enemy( this, ship );
+            actor = new Enemy( this, 
+                               GetComponent<TransformController>(),
+                               GetComponent<PhysicsController>() );
         }
     }
 }

@@ -8,7 +8,7 @@ namespace SpaceGame.Actors
     public class Bullet : IUpdatable, IShootable
     {
         IAgent agent;
-
+        ITransformController transform;
         IBulletCollisionReporter collisions;
         
         [Tooltip("speed that the bullet will travel at.")]
@@ -24,10 +24,13 @@ namespace SpaceGame.Actors
         private bool isShooting = false;
 
         public Bullet ( IAgent agent,
+                        ITransformController transform,
                         IBulletCollisionReporter collisions )
         {
             this.agent = agent;
+            this.transform = transform;
             this.collisions = collisions;
+            
         }
 
         /// <summary>
@@ -36,8 +39,8 @@ namespace SpaceGame.Actors
         /// <param name="direction">the direction to shoot the bullet</param>
         public void Shoot ( Vector3 startingPosition, Vector3 direction )
         {
-            agent.Position = startingPosition;
-            agent.Forward = direction;
+            transform.Position = startingPosition;
+            transform.Forward = direction;
             isShooting = true;
         }
 
@@ -63,7 +66,7 @@ namespace SpaceGame.Actors
             else
             {
 
-                agent.Position = agent.Position + agent.Forward * speed * deltaTime;
+                transform.Position = transform.Position + transform.Forward * speed * deltaTime;
                 // check for collisions
             }
         }

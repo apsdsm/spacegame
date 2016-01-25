@@ -15,6 +15,7 @@ namespace SpaceGame.Tests.Unit.Actors
         IAgent agent;
         IGravityService gravity;
         IRegistryService registry;
+        ITransformController transform;
         IPlanetSizeReporter size;
 
         [ SetUp ]
@@ -23,9 +24,10 @@ namespace SpaceGame.Tests.Unit.Actors
             agent = Substitute.For<IAgent>();
             gravity = Substitute.For<IGravityService>();
             registry = Substitute.For<IRegistryService>();
+            transform = Substitute.For<ITransformController>();
             size = Substitute.For<IPlanetSizeReporter>();
 
-            planet = new Planet( agent, size, gravity, registry );
+            planet = new Planet( agent, transform, size, gravity, registry );
         }
 
         [ Test ]
@@ -37,7 +39,7 @@ namespace SpaceGame.Tests.Unit.Actors
 
             gravity.GetTargets().Returns( target_list );
             target.GetPosition().Returns( new Vector3( 0.0f, 10.0f, 0.0f ) );
-            agent.Position.Returns( new Vector3( 0.0f, 0.0f, 0.0f ) );
+            transform.Position.Returns( new Vector3( 0.0f, 0.0f, 0.0f ) );
 
             planet.Update();
             target.Received().AddForce( new Vector3( 0.0f, -10.0f, 0.0f ) );

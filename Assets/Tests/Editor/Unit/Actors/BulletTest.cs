@@ -13,15 +13,17 @@ namespace SpaceGame.Tests.Unit.Actors
         Bullet bullet;
 
         IAgent agent;
+        ITransformController transform;
         IBulletCollisionReporter collisions;
 
         [SetUp]
         public void setup ()
         {
             agent = Substitute.For<IAgent>();
+            transform = Substitute.For<ITransformController>();
             collisions = Substitute.For<IBulletCollisionReporter>();
 
-            bullet = new Bullet( agent, collisions );
+            bullet = new Bullet( agent, transform, collisions );
         }
 
         [Test]
@@ -33,7 +35,7 @@ namespace SpaceGame.Tests.Unit.Actors
 
             bullet.Update( 1.0f );
 
-            agent.Received().Position = (Vector3.forward * 10.0f * 1.0f);
+            transform.Received().Position = (Vector3.forward * 10.0f * 1.0f);
         }
 
         [Test]
