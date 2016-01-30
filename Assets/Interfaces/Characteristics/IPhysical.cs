@@ -14,13 +14,13 @@ namespace SpaceGame.Interfaces
         void AddForce ( Vector3 force );
 
         /// <summary>
-        /// Return the position of the object.
+        /// Returns the position of the object.
         /// </summary>
         /// <returns></returns>
         Vector3 GetPosition ();
 
         /// <summary>
-        /// Set the ship to a position defined by a Vector3
+        /// Sets the position defined by a Vector3
         /// </summary>
         /// <returns></returns>
         void SetPosition ( Vector3 position );

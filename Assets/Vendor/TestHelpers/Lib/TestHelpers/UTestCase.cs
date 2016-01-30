@@ -37,6 +37,7 @@ namespace TestHelpers
         private MethodInfo testOnceWhenReadyMethod;
         private MethodInfo testEachWhenReadyMethod;
 
+
         /// <summary>
         /// Returns true if the test is ready to start (assuming that the test
         /// is waiting on the TryToReady method to return true).
@@ -91,6 +92,7 @@ namespace TestHelpers
             testEachMethod = GetType().GetMethod( "TestEachFrame", BindingFlags.Instance | BindingFlags.NonPublic );
             testOnceWhenReadyMethod = GetType().GetMethod( "TestWhenReady", BindingFlags.Instance | BindingFlags.NonPublic );
             testEachWhenReadyMethod = GetType().GetMethod( "TestEachFrameWhenReady", BindingFlags.Instance | BindingFlags.NonPublic );
+
         }
 
         /// <summary>
@@ -229,6 +231,28 @@ namespace TestHelpers
             if ( remainder < epsilon )
             {
                 madeSuccessfulAssertion = true;
+            }
+        }
+
+        /// <summary>
+        /// Assert that two vectors are facing the same direction.
+        /// </summary>
+        /// <param name="a">a value to compare</param>
+        /// <param name="b">b value to compare</param>
+        /// <param name="message">optional error message</param>
+        public void AssertSameDirection ( Vector3 a, Vector3 b, string message = "" )
+        {
+            a.Normalize();
+            b.Normalize();
+
+            if ( a == b )
+            {
+                IntegrationTest.Assert( true, "Vectors oriented in same direction" );
+                madeSuccessfulAssertion = true;
+            }
+            else
+            {
+                IntegrationTest.Fail( gameObject, message == "" ? "Vectors not oriented in same direction" : message );
             }
         }
 
