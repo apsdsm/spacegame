@@ -13,6 +13,9 @@ namespace SpaceGame.Actors
         // keeps a list of which objects want gravity
         private IGravityService gravity;
 
+        // allows other objects to access the planet with direct relation
+        private IRegistryService registry;
+
 
         /// <summary>
         /// Set up planet.
@@ -22,8 +25,12 @@ namespace SpaceGame.Actors
             // get components
             surface = GetComponent<SphereCollider>();
 
-            //resolve services
+            // resolve services
             gravity = IOC.Resolve<IGravityService>();
+            registry = IOC.Resolve<IRegistryService>();
+
+            // register object
+            registry.Register<IPlanet>("Planet", this);
         }
 
 

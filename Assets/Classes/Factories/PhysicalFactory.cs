@@ -39,7 +39,7 @@ namespace SpaceGame.Factories
             if ( enemyShip != null )
             {
                 GameObject gameObject = Instantiate( enemyShip );
-                IPhysical component = gameObject.GetComponent<Ship>();
+                IPhysical component = gameObject.GetComponent<Enemy>();
                 return component;
             }
 

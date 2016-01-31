@@ -199,6 +199,17 @@ namespace TestHelpers
         }
 
         /// <summary>
+        /// Make the test fail. Wall call teardown automatically.
+        /// </summary>
+        /// <param name="message"></param>
+        public void Fail (string message = "")
+        {
+            finished = true;
+            IntegrationTest.Fail(message);
+            TearDown();
+        }
+
+        /// <summary>
         /// Asserts that the condition passed to the method is true.
         /// </summary>
         /// <param name="condition">condition to check</param>

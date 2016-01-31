@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using SpaceGame.Actors;
-using Flexo;
+using Fletch;
+using Fletch.Fakes;
 using TestHelpers;
 
 namespace SpaceGame.Tests.Integration.PlanetTests
@@ -10,6 +11,9 @@ namespace SpaceGame.Tests.Integration.PlanetTests
         protected GameObject planet_object;
         protected Planet planet;
 
+        // fakes
+        protected RegistryServiceFake registry;
+
         public override void SetUp ()
         {
             base.SetUp();
@@ -17,6 +21,13 @@ namespace SpaceGame.Tests.Integration.PlanetTests
             planet_object = GameObject.Find( "Planet" );
             planet = planet_object.GetComponent<Planet>();
 
+            registry = (RegistryServiceFake)IOC.Resolve<IRegistryService>();
+
+        }
+
+        public override void TearDown ()
+        {
+            base.TearDown();
         }
     }
 }
