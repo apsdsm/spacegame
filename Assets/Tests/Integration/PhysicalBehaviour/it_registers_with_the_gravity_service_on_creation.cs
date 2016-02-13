@@ -2,11 +2,11 @@
 using SpaceGame.Tests.Fakes;
 using Fletch;
 
-namespace SpaceGame.Tests.Integration.ShipTests
+namespace SpaceGame.Tests.Integration.PhysicalBehaviourTests
 {
 
-    [IntegrationTest.DynamicTest( "ShipTests" )]
-    class it_registers_with_the_gravity_service_on_creation : ship_test
+    [IntegrationTest.DynamicTest("PhysicalBehaviourTests")]
+    class it_registers_with_the_gravity_service_on_creation : physical_behaviour_test
     {
 
         private GravityServiceFake gravity;

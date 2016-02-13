@@ -7,9 +7,13 @@ using System;
 /// </summary>
 public class PCShipController : MonoBehaviour, IShipController
 {
-    private IControllable ship;
+    private IControllableShip ship;
 
-    public void Deregister ( IControllable ship )
+    /// <summary>
+    /// Deregister the currently controlled ship (if it matches the ship currently being controlled).
+    /// </summary>
+    /// <param name="ship"></param>
+    public void Deregister ( IControllableShip ship )
     {
         if ( this.ship == ship )
         {
@@ -17,7 +21,11 @@ public class PCShipController : MonoBehaviour, IShipController
         }
     }
 
-    public void Register ( IControllable ship )
+    /// <summary>
+    /// Registers the ship that should be controlled by this controller.
+    /// </summary>
+    /// <param name="ship"></param>
+    public void Register ( IControllableShip ship )
     {
         this.ship = ship;
     }

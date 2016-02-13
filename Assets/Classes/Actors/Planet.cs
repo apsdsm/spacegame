@@ -43,7 +43,7 @@ namespace SpaceGame.Actors
             
             foreach (IPhysical target in targets)
             {
-                Vector3 targetPosition = target.GetPosition();
+                Vector3 targetPosition = target.Position;
                 Vector3 gravityToTarget = transform.position - targetPosition;
 
                 target.AddForce(gravityToTarget);

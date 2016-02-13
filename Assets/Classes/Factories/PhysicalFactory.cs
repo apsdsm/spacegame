@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using SpaceGame.Interfaces;
+using SpaceGame.Behaviours;
 using SpaceGame.Actors;
 
 namespace SpaceGame.Factories
@@ -19,14 +20,7 @@ namespace SpaceGame.Factories
         /// <returns></returns>
         public IPhysical CreatePlayerShip ()
         {
-            if ( playerShip != null )
-            {
-                GameObject gameObject = Instantiate( playerShip );
-                IPhysical component = gameObject.GetComponent<Ship>();
-                return component;
-            }
-
-            return null;
+            return Create(playerShip);
         }
 
 
@@ -36,10 +30,21 @@ namespace SpaceGame.Factories
         /// <returns></returns>
         public IPhysical CreateEnemyShip ()
         {
-            if ( enemyShip != null )
+            return Create(enemyShip);
+        }
+
+
+        /// <summary>
+        /// Create an object and return it, or null if the template is not set.
+        /// </summary>
+        /// <param name="template">thing to create</param>
+        /// <returns>instantiated thing</returns>
+        private IPhysical Create (GameObject template)
+        {
+            if (template != null)
             {
-                GameObject gameObject = Instantiate( enemyShip );
-                IPhysical component = gameObject.GetComponent<Enemy>();
+                GameObject newObject = Instantiate(template);
+                IPhysical component = newObject.GetComponent<PhysicalBehaviour>();
                 return component;
             }
 

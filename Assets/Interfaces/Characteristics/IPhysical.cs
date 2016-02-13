@@ -17,12 +17,9 @@ namespace SpaceGame.Interfaces
         /// Returns the position of the object.
         /// </summary>
         /// <returns></returns>
-        Vector3 GetPosition ();
-
-        /// <summary>
-        /// Sets the position defined by a Vector3
-        /// </summary>
-        /// <returns></returns>
-        void SetPosition ( Vector3 position );
+        Vector3 Position
+        {
+            get; set;
+        }
     }
 }

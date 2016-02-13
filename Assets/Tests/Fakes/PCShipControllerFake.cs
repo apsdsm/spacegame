@@ -8,12 +8,12 @@ namespace SpaceGame.Tests.Fakes
         public int registerCalled = 0;
         public int deregisterCalled = 0;
 
-        public void Register ( IControllable ship )
+        public void Register ( IControllableShip ship )
         {
             registerCalled++;
         }
 
-        public void Deregister ( IControllable ship )
+        public void Deregister ( IControllableShip ship )
         {
             deregisterCalled++;
         }

@@ -5,7 +5,7 @@ namespace SpaceGame.Interfaces
     /// <summary>
     /// A Physics object can be affected by external physics forces like gravity.
     /// </summary>
-    public interface IControllable
+    public interface IControllableShip
     {
         /// <summary>
         /// Fire the forward or backward thrusters of the ship, causing it to 

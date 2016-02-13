@@ -2,6 +2,7 @@
 
 namespace SpaceGame.Behaviours
 {
+    [RequireComponent(typeof(Camera))]
     public class ChaseCameraBehaviour : MonoBehaviour
     {
         public Transform target;
@@ -30,6 +31,5 @@ namespace SpaceGame.Behaviours
             transform.rotation = lerpedRotation;
             transform.position = lerpedPosition;
         }
-
     }
 }

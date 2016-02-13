@@ -65,7 +65,7 @@ namespace SpaceGame.Actors
 
                 Vector3 spawnPosition = planet.GetRandomPosition(spawnHeight);
 
-                enemy.SetPosition(spawnPosition);
+                enemy.Position = spawnPosition;
                 
                 timeSinceSpawn = 0;
 

@@ -11,11 +11,11 @@ namespace SpaceGame.Interfaces
         /// register a controllable ship to be the target of this controller
         /// </summary>
         /// <param name="ship">The ship to direct input to</param>
-        void Register ( IControllable ship );
+        void Register ( IControllableShip ship );
 
         /// <summary>
         /// deregister the currently controlled ship if it matches the reference.
         /// </summary>
-        void Deregister ( IControllable ship );
+        void Deregister ( IControllableShip ship );
     }
 }

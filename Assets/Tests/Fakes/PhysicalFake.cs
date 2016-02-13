@@ -18,6 +18,25 @@ namespace SpaceGame.Tests.Fakes
             addForceCalled++;
         }
 
+        // Position getter/setter
+
+        public int positionSet = 0;
+        public Vector3 positonSetWith;
+        public int positionGet = 0;
+        public Vector3 positionGetReturns;
+
+        public Vector3 Position
+        {
+            set {
+                positionSet++;
+                positonSetWith = value;
+            }
+            get {
+                positionGet++;
+                return positionGetReturns;
+            }
+        }
+
         // get position
 
         public int getPositionCalled = 0;
