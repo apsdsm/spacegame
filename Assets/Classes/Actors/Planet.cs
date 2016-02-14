@@ -56,12 +56,14 @@ namespace SpaceGame.Actors
         /// </summary>
         /// <param name="distanceFromSurface">How high above the surface the position should be</param>
         /// <returns>Vector3 describing new position</returns>
-        public Vector3 GetRandomPosition (float distanceFromSurface)
+        public SpawnPoint GetRandomSpawnPoint (float distanceFromSurface)
         {
-            Vector3 orientation = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
-            Vector3 projection = orientation * (surface.radius + distanceFromSurface);
+            SpawnPoint spawnPoint = new SpawnPoint();
 
-            return projection;
+            spawnPoint.orientation = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
+            spawnPoint.position = spawnPoint.orientation * (surface.radius + distanceFromSurface);
+
+            return spawnPoint;
         }
     }
 }

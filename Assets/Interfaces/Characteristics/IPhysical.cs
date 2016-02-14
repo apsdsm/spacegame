@@ -14,12 +14,15 @@ namespace SpaceGame.Interfaces
         void AddForce ( Vector3 force );
 
         /// <summary>
-        /// Returns the position of the object.
+        /// The object's current position.
         /// </summary>
-        /// <returns></returns>
         Vector3 Position
-        {
-            get; set;
-        }
+        { get; set; }
+
+        /// <summary>
+        /// The object's current up axis
+        /// </summary>
+        Vector3 Up
+        { get; set; }
     }
 }

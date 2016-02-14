@@ -41,5 +41,12 @@ namespace SpaceGame.Behaviours
 
             get { return transform.position; }
         }
+        
+        public Vector3 Up
+        {
+            set { transform.up = value; }
+
+            get { return transform.up; }
+        }
     }
 }

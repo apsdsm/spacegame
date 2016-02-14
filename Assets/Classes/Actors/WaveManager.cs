@@ -63,9 +63,10 @@ namespace SpaceGame.Actors
             {
                 IPhysical enemy = factory.CreateEnemyShip();
 
-                Vector3 spawnPosition = planet.GetRandomPosition(spawnHeight);
+                SpawnPoint spawnPoint = planet.GetRandomSpawnPoint(spawnHeight);
 
-                enemy.Position = spawnPosition;
+                enemy.Position = spawnPoint.position;
+                enemy.Up = spawnPoint.orientation;
                 
                 timeSinceSpawn = 0;
 

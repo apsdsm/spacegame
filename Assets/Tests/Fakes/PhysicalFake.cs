@@ -21,7 +21,7 @@ namespace SpaceGame.Tests.Fakes
         // Position getter/setter
 
         public int positionSet = 0;
-        public Vector3 positonSetWith;
+        public Vector3 positionSetWith;
         public int positionGet = 0;
         public Vector3 positionGetReturns;
 
@@ -29,36 +29,33 @@ namespace SpaceGame.Tests.Fakes
         {
             set {
                 positionSet++;
-                positonSetWith = value;
+                positionSetWith = value;
             }
+
             get {
                 positionGet++;
                 return positionGetReturns;
             }
         }
 
-        // get position
+        // Up getter/setter
 
-        public int getPositionCalled = 0;
+        public int upSet = 0;
+        public Vector3 upSetWith;
+        public int upGet = 0;
+        public Vector3 upGetReturns;
 
-        public Vector3 getPositionReturns;
-
-        public Vector3 GetPosition ()
+        public Vector3 Up
         {
-            getPositionCalled++;
-            return getPositionReturns;
-        }
+            set {
+                upSet++;
+                upSetWith = value;
+            }
 
-        // set position
-
-        public int setPositionCalled = 0;
-
-        public Vector3 setPositionPositionValue;
-
-        public void SetPosition (Vector3 position)
-        {
-            setPositionPositionValue = position;
-            setPositionCalled++;
+            get {
+                upGet++;
+                return upGetReturns;
+            }
         }
 
         /// <summary>

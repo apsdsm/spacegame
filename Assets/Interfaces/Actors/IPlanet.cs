@@ -8,7 +8,7 @@ namespace SpaceGame.Interfaces
         /// Returns a random position above the surface of the planet.
         /// </summary>
         /// <param name="distanceFromSurface"></param>
-        /// <returns>Vector3 random position</returns>
-        Vector3 GetRandomPosition ( float distanceFromSurface );
+        /// <returns>random spawn point above surface</returns>
+        SpawnPoint GetRandomSpawnPoint ( float distanceFromSurface );
     }
 }

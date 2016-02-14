@@ -11,9 +11,9 @@ namespace SpaceGame.Tests.Fakes
 
         public float getRandomPositionReceivedDistanceFromSurface;
 
-        public Vector3 getRandomPositionReturns;
+        public SpawnPoint getRandomPositionReturns;
 
-        public Vector3 GetRandomPosition (float distanceFromSurface)
+        public SpawnPoint GetRandomSpawnPoint (float distanceFromSurface)
         {
             getRandomPositionCalled++;
             getRandomPositionReceivedDistanceFromSurface = distanceFromSurface;
@@ -27,7 +27,7 @@ namespace SpaceGame.Tests.Fakes
         public void ResetFake ()
         {
             getRandomPositionCalled = 0;
-            getRandomPositionReturns = default(Vector3);
+            getRandomPositionReturns = default(SpawnPoint);
         }
     }
 }
