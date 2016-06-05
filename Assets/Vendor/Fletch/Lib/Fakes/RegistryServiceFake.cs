@@ -9,7 +9,7 @@ namespace Fletch.Fakes
     /// the Registry class as expected. It goes without saying this service should
     /// not be used outside of a test environment.
     /// </summary>
-    class RegistryServiceFake : MonoBehaviour, IRegistryService
+    public class RegistryServiceFake : MonoBehaviour, IRegistryService
     {
         // registration
 

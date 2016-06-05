@@ -5,7 +5,7 @@
     {
         void Test ()
         {
-            AssertThat(physical.Up == physical_object.transform.position);
+            AssertThat(physical.Up == physical_object.transform.up);
         }
     }
 }

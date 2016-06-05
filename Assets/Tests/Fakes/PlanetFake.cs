@@ -1,10 +1,26 @@
 ﻿using UnityEngine;
 using SpaceGame.Interfaces;
+using System;
 
 namespace SpaceGame.Tests.Fakes
 {
     public class PlanetFake : IPlanet
     {
+
+        // get core location
+
+        public int getCoreLocationCalled = 0;
+
+        public Vector3 getCoreLocationReturns;
+
+        public Vector3 CoreLocation
+        {
+            get {
+                ++getCoreLocationCalled;
+                return getCoreLocationReturns;
+            }
+        }
+
         // get random position
 
         public int getRandomPositionCalled = 0;
@@ -15,7 +31,7 @@ namespace SpaceGame.Tests.Fakes
 
         public SpawnPoint GetRandomSpawnPoint (float distanceFromSurface)
         {
-            getRandomPositionCalled++;
+            ++getRandomPositionCalled;
             getRandomPositionReceivedDistanceFromSurface = distanceFromSurface;
 
             return getRandomPositionReturns;
@@ -28,6 +44,9 @@ namespace SpaceGame.Tests.Fakes
         {
             getRandomPositionCalled = 0;
             getRandomPositionReturns = default(SpawnPoint);
+
+            getCoreLocationCalled = 0;
+            getCoreLocationReturns = default(Vector3);
         }
     }
 }

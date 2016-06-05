@@ -18,6 +18,15 @@ namespace SpaceGame.Actors
         // creates the bullets shot by the ship
         private IShootableFactory bullets;
 
+        // allows other objects to access the planet with direct relation
+        private IRegistryService registry;
+
+        // private planet reference
+        private IPlanet planet;
+
+        // public setter
+        public IPlanet Planet { set { planet = value; } }
+        
         /// <summary>
         /// Set up components and subscribe to services.
         /// </summary>
@@ -32,9 +41,18 @@ namespace SpaceGame.Actors
             // get services
             controller = IOC.Resolve<IShipController>();
             bullets = IOC.Resolve<IShootableFactory>();
+            registry = IOC.Resolve<IRegistryService>();
 
             // subscribe to services
             controller.Register(this);
+        }
+
+        /// <summary>
+        /// Load reference to objects that were set up during Awake.
+        /// </summary>
+        void Start ()
+        {
+            registry.Reserve<IPlanet>("Planet", this);
         }
 
 
@@ -72,7 +90,7 @@ namespace SpaceGame.Actors
         /// </summary>
         public void Shoot ()
         {
-            bullets.CreatePlayerBullet().Shoot(transform.position, transform.forward);
+            bullets.CreatePlayerBullet().Shoot(transform.position, transform.forward, planet.CoreLocation);
         }
     }
 }

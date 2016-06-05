@@ -40,7 +40,7 @@ namespace SpaceGame.Services
         /// Return an array of targets to apply gravity to.
         /// </summary>
         /// <returns></returns>
-        public IPhysical[] GetTargets ()
+        public IPhysical[] Targets ()
         {
             return targets.ToArray();
         }

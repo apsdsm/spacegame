@@ -9,7 +9,7 @@ namespace SpaceGame.Tests.Fakes
         public Vector3 shootStartingPositionValue;
         public Vector3 shootDirectionValue;
 
-        public void Shoot ( Vector3 startingPosition, Vector3 direction )
+        public void Shoot ( Vector3 startingPosition, Vector3 direction, Vector3 gravityCore )
         {
             shootCalled++;
             shootStartingPositionValue = startingPosition;

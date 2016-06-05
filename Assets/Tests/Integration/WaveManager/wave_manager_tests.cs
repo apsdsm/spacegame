@@ -9,7 +9,7 @@ using TestHelpers;
 
 namespace SpaceGame.Tests.Integration.WaveManagerTests
 {
-    class test_case : UTestCase
+    public class test_case : UTestCase
     {
         // sut
         protected GameObject wave_manager_object;

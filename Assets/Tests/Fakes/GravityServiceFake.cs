@@ -24,7 +24,7 @@ namespace SpaceGame.Tests.Fakes
             flushCalled++;
         }
 
-        public IPhysical[] GetTargets ()
+        public IPhysical[] Targets ()
         {
             getTargetsCalled++;
 

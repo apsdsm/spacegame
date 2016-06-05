@@ -44,6 +44,7 @@ namespace SpaceGame.Factories
             if (template != null)
             {
                 GameObject newObject = Instantiate(template);
+                newObject.transform.parent = this.transform;
                 IPhysical component = newObject.GetComponent<PhysicalBehaviour>();
                 return component;
             }

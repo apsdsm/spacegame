@@ -4,7 +4,7 @@ namespace SpaceGame.Tests.Integration.ProjectileTests
 {
 
     [IntegrationTest.DynamicTest( "ProjectileTests" )]
-    class it_moves_in_the_direction_it_was_fired : projectile_test
+    class it_moves_around_the_planet_in_the_direction_it_was_fired : projectile_test
     {
 
         public override void SetUp ()
@@ -13,7 +13,7 @@ namespace SpaceGame.Tests.Integration.ProjectileTests
 
             projectile.speed = 10.0f;
             projectile.lifeSpan = 10.0f;
-            projectile.Shoot( Vector3.zero, Vector3.forward );
+            projectile.Shoot( Vector3.up, Vector3.forward, Vector3.zero );
         }
 
         void TestEachFrame ()

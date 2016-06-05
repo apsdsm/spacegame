@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
+using Random = UnityEngine.Random;
 using SpaceGame.Interfaces;
 using Fletch;
+using System;
 
 namespace SpaceGame.Actors
 {
     [RequireComponent(typeof(SphereCollider))]
-    class Planet : MonoBehaviour, IPlanet
+    public class Planet : MonoBehaviour, IPlanet
     {
         // describes the size and surface of the planet
         private SphereCollider surface;
@@ -39,7 +41,7 @@ namespace SpaceGame.Actors
         /// </summary>
         void Update ()
         {
-            IPhysical[] targets = gravity.GetTargets();
+            IPhysical[] targets = gravity.Targets();
             
             foreach (IPhysical target in targets)
             {
@@ -50,12 +52,6 @@ namespace SpaceGame.Actors
             }
         }
 
-
-        /// <summary>
-        /// Provides a random point above the surface of the planet
-        /// </summary>
-        /// <param name="distanceFromSurface">How high above the surface the position should be</param>
-        /// <returns>Vector3 describing new position</returns>
         public SpawnPoint GetRandomSpawnPoint (float distanceFromSurface)
         {
             SpawnPoint spawnPoint = new SpawnPoint();
@@ -64,6 +60,11 @@ namespace SpaceGame.Actors
             spawnPoint.position = spawnPoint.orientation * (surface.radius + distanceFromSurface);
 
             return spawnPoint;
+        }
+
+        public Vector3 CoreLocation
+        {
+            get { return transform.position; }
         }
     }
 }

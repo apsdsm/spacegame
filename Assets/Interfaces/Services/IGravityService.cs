@@ -24,6 +24,6 @@ namespace SpaceGame.Interfaces
         /// Return an array of targets that should have gravity applied to them.
         /// </summary>
         /// <returns></returns>
-        IPhysical[] GetTargets ();
+        IPhysical[] Targets ();
     }
 }

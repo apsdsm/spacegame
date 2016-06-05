@@ -19,6 +19,9 @@ namespace SpaceGame.Actors
         // amount of time since projectile was fired
         private float timeSinceFired = 0.0f;
 
+        // the point around which objects will rotate
+        private Vector3 gravityCore;
+
         // Update is called once per frame
         void Update ()
         {
@@ -35,14 +38,16 @@ namespace SpaceGame.Actors
                 return;
             }
 
-            transform.position = transform.position + transform.forward * speed * Time.deltaTime;
+            transform.RotateAround(gravityCore, transform.forward, speed * Time.deltaTime);
+            //transform.position = transform.position + transform.forward * speed * Time.deltaTime;
         }
 
         // Shoot the projectile in this direction
-        public void Shoot ( Vector3 startingPosition, Vector3 direction )
+        public void Shoot ( Vector3 startingPosition, Vector3 direction, Vector3 gravityCore )
         {
             transform.position = startingPosition;
             transform.forward = direction;
+            this.gravityCore = gravityCore;
             active = true;
         }
     }

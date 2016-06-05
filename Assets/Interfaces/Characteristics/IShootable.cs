@@ -10,7 +10,9 @@ namespace SpaceGame.Interfaces
         /// <summary>
         /// Shoot the shootable thing in a given direction
         /// </summary>
-        /// <param name="direction"></param>
-        void Shoot ( Vector3 startingPosition, Vector3 direction );      
+        /// <param name="startingPosition">where the projectile starts</param>
+        /// <param name="direction">what direction it's traveling in</param>
+        /// <param name="gravityCore">the position of what it's orbiting</param>
+        void Shoot ( Vector3 startingPosition, Vector3 direction, Vector3 gravityCore );      
     }
 }
