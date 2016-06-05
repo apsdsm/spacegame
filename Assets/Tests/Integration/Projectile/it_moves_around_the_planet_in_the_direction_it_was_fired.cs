@@ -11,14 +11,21 @@ namespace SpaceGame.Tests.Integration.ProjectileTests
         {
             base.SetUp();
 
-            projectile.speed = 10.0f;
-            projectile.lifeSpan = 10.0f;
+            projectile.speed = 30.0f;
+            projectile.lifeSpan = 2.0f;
             projectile.Shoot( Vector3.up, Vector3.forward, Vector3.zero );
         }
 
         void TestEachFrame ()
         {
             float distanceTravelled = ( projectile_object.transform.position ).magnitude;
+
+            if (TotalTime > 1.0f)
+            {
+                float distanceFromCore = projectile_object.transform.position.magnitude;
+
+                AssertSimilar(1.0f, distanceFromCore);
+            }
 
             if ( distanceTravelled > 0.0f )
             {
