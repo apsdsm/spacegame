@@ -38,8 +38,9 @@ namespace SpaceGame.Actors
                 return;
             }
 
-            transform.RotateAround(gravityCore, transform.forward, speed * Time.deltaTime);
-            //transform.position = transform.position + transform.forward * speed * Time.deltaTime;
+            Vector3 rotateAngle = Vector3.Cross(transform.position - gravityCore, transform.forward);
+
+            transform.RotateAround(gravityCore, rotateAngle, speed * Time.deltaTime);
         }
 
         // Shoot the projectile in this direction

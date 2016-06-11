@@ -26,11 +26,6 @@ namespace SpaceGame.Tests.Integration.ProjectileTests
 
                 AssertSimilar(1.0f, distanceFromCore);
             }
-
-            if ( distanceTravelled > 0.0f )
-            {
-                Pass();
-            }
         }
 
     }
