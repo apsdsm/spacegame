@@ -9,6 +9,8 @@ namespace SpaceGame.Behaviours
 
         public float distance = 10.0f;
 
+        public float maxDistance = 12.0f;
+
         public float angle = 45.0f;
 
         public float angleDamping = 5.0f;
@@ -17,19 +19,19 @@ namespace SpaceGame.Behaviours
 
         void LateUpdate ()
         {
-            if ( !target )
-            {
+            if (!target) {
                 return;
             }
+
+            Rigidbody rigid = target.GetComponent<Rigidbody>();
+
+            Vector3 velocity = rigid.velocity;
             
-            Vector3 idealPosition = target.position + ( Quaternion.AngleAxis( angle, target.transform.right ) * target.forward * -distance );
-            Quaternion idealRotation = Quaternion.AngleAxis( angle, target.transform.right ) * target.rotation;
+            Vector3 idealPosition = target.position - velocity + (Quaternion.AngleAxis(angle, target.transform.right) * target.forward * -distance);
 
-            Vector3 lerpedPosition = Vector3.Lerp( transform.position, idealPosition, Time.deltaTime * angleDamping );
-            Quaternion lerpedRotation = Quaternion.Lerp( transform.rotation, idealRotation, Time.deltaTime * rotationDamping );
+            transform.position = idealPosition;
 
-            transform.rotation = lerpedRotation;
-            transform.position = lerpedPosition;
+            transform.LookAt(target, target.up);
         }
     }
 }
