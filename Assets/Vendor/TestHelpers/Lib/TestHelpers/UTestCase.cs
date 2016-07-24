@@ -88,10 +88,10 @@ namespace TestHelpers
         /// </summary>
         void Awake ()
         {
-            testOnceMethod = GetType().GetMethod( "Test", BindingFlags.Instance | BindingFlags.NonPublic );
-            testEachMethod = GetType().GetMethod( "TestEachFrame", BindingFlags.Instance | BindingFlags.NonPublic );
-            testOnceWhenReadyMethod = GetType().GetMethod( "TestWhenReady", BindingFlags.Instance | BindingFlags.NonPublic );
-            testEachWhenReadyMethod = GetType().GetMethod( "TestEachFrameWhenReady", BindingFlags.Instance | BindingFlags.NonPublic );
+            testOnceMethod = GetType().GetMethod("Test", BindingFlags.Instance | BindingFlags.NonPublic);
+            testEachMethod = GetType().GetMethod("TestEachFrame", BindingFlags.Instance | BindingFlags.NonPublic);
+            testOnceWhenReadyMethod = GetType().GetMethod("TestWhenReady", BindingFlags.Instance | BindingFlags.NonPublic);
+            testEachWhenReadyMethod = GetType().GetMethod("TestEachFrameWhenReady", BindingFlags.Instance | BindingFlags.NonPublic);
 
         }
 
@@ -107,11 +107,10 @@ namespace TestHelpers
         /// the assertion was true.
         /// </summary>
         /// <param name="method"></param>
-        private void TryInvokeTestMethod ( MethodInfo method )
+        private void TryInvokeTestMethod (MethodInfo method)
         {
-            if ( method != null )
-            {
-                method.Invoke( this, new object[] { } );
+            if (method != null) {
+                method.Invoke(this, new object[] { });
             }
         }
 
@@ -122,42 +121,38 @@ namespace TestHelpers
         /// </summary>
         void Update ()
         {
-            if ( finished )
-            {
+            if (finished) {
                 return;
             }
 
-            TryInvokeTestMethod( testOnceMethod );
+            TryInvokeTestMethod(testOnceMethod);
 
-            TryInvokeTestMethod( testEachMethod );
+            TryInvokeTestMethod(testEachMethod);
 
-            frame++;
+            ++frame;
 
             time += Time.deltaTime;
 
-            if ( !readyToStart )
-            {
+            if (!readyToStart) {
                 readyToStart = TryToReady();
             }
 
-            if ( readyToStart )
-            {
+            if (readyToStart) {
 
-                TryInvokeTestMethod( testOnceWhenReadyMethod );
+                TryInvokeTestMethod(testOnceWhenReadyMethod);
 
-                TryInvokeTestMethod( testEachWhenReadyMethod );
+                TryInvokeTestMethod(testEachWhenReadyMethod);
 
-                frameSinceReady++;
+                ++frameSinceReady;
 
                 timeSinceReady += Time.deltaTime;
             }
 
-            if ( madeSuccessfulAssertion )
-            {
+            if (madeSuccessfulAssertion) {
                 Pass();
             }
         }
-        
+
 
         /// <summary>
         /// If this method is overwritten, if can contain logic that will try to execute
@@ -214,12 +209,11 @@ namespace TestHelpers
         /// </summary>
         /// <param name="condition">condition to check</param>
         /// <param name="message">optional message to pass if check fails</param>
-        public void AssertThat ( bool condition, string message="" )
+        public void AssertThat (bool condition, string message = "")
         {
-            IntegrationTest.Assert( condition, message );
+            IntegrationTest.Assert(condition, message);
 
-            if ( condition == true )
-            {
+            if (condition == true) {
                 madeSuccessfulAssertion = true;
             }
         }
@@ -233,14 +227,13 @@ namespace TestHelpers
         /// <param name="b">b value to compare</param>
         /// <param name="epsilon">a small number that represents an acceptable difference between a and b</param>
         /// <param name="message">optional error message</param>
-        public void AssertSimilar ( float a, float b, float epsilon = 0.01f, string message = "" )
+        public void AssertSimilar (float a, float b, float epsilon = 0.01f, string message = "")
         {
-            float remainder = Mathf.Abs( a - b );
+            float remainder = Mathf.Abs(a - b);
 
-            IntegrationTest.Assert( remainder < epsilon );
+            IntegrationTest.Assert(remainder < epsilon);
 
-            if ( remainder < epsilon )
-            {
+            if (remainder < epsilon) {
                 madeSuccessfulAssertion = true;
             }
         }
@@ -251,19 +244,17 @@ namespace TestHelpers
         /// <param name="a">a value to compare</param>
         /// <param name="b">b value to compare</param>
         /// <param name="message">optional error message</param>
-        public void AssertSameDirection ( Vector3 a, Vector3 b, string message = "" )
+        public void AssertSameDirection (Vector3 a, Vector3 b, string message = "")
         {
             a.Normalize();
             b.Normalize();
 
-            if ( a == b )
-            {
-                IntegrationTest.Assert( true, "Vectors oriented in same direction" );
+            if (a == b) {
+                IntegrationTest.Assert(true, "Vectors oriented in same direction");
                 madeSuccessfulAssertion = true;
             }
-            else
-            {
-                IntegrationTest.Fail( gameObject, message == "" ? "Vectors not oriented in same direction" : message );
+            else {
+                IntegrationTest.Fail(gameObject, message == "" ? "Vectors not oriented in same direction" : message);
             }
         }
 

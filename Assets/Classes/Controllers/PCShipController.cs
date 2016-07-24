@@ -13,10 +13,9 @@ public class PCShipController : MonoBehaviour, IShipController
     /// Deregister the currently controlled ship (if it matches the ship currently being controlled).
     /// </summary>
     /// <param name="ship"></param>
-    public void Deregister ( IControllableShip ship )
+    public void Deregister (IControllableShip ship)
     {
-        if ( this.ship == ship )
-        {
+        if (this.ship == ship) {
             this.ship = null;
         }
     }
@@ -25,31 +24,29 @@ public class PCShipController : MonoBehaviour, IShipController
     /// Registers the ship that should be controlled by this controller.
     /// </summary>
     /// <param name="ship"></param>
-    public void Register ( IControllableShip ship )
+    public void Register (IControllableShip ship)
     {
         this.ship = ship;
     }
-	
-	/// <summary>
+
+    /// <summary>
     /// If there is a registered ship, will pass PC input (keyboard and gamepad).
     /// </summary>
-	void Update ()
+    void Update ()
     {
-        if ( ship == null )
-        {
+        if (ship == null) {
             return;
         }
 
         // do forward backwards movement
-        ship.AddLongitudinalThrust( Input.GetAxis( "Vertical" ) );
+        ship.AddLongitudinalThrust(Input.GetAxis("Vertical"));
 
         // do rotational movement
-        ship.AddRotationalThrust( Input.GetAxis( "Horizontal" ) );
+        ship.AddRotationalThrust(Input.GetAxis("Horizontal"));
 
         // fire weapons
-        if ( Input.GetButtonDown( "Fire1" ) )
-        {
+        if (Input.GetButtonDown("Fire1")) {
             ship.Shoot();
         }
-	}
+    }
 }
