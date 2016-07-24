@@ -52,12 +52,12 @@ namespace SpaceGame.Actors
             }
         }
 
-        public SpawnPoint GetRandomSpawnPoint (float distanceFromSurface)
+        public SpawnPoint GetRandomSpawnPoint ()
         {
             SpawnPoint spawnPoint = new SpawnPoint();
 
             spawnPoint.orientation = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
-            spawnPoint.position = spawnPoint.orientation * (surface.radius + distanceFromSurface);
+            spawnPoint.position = spawnPoint.orientation * surface.radius;
 
             return spawnPoint;
         }

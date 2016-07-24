@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SpaceGame.Tests.Integration.WaveManagerTests
 {
     [IntegrationTest.DynamicTest("WaveManagerTests")]
-    class it_spawns_new_enemies : test_case
+    class it_spawns_wave_actors : test_case
     {
         public override void SetUp ()
         {

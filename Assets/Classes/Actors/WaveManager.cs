@@ -13,14 +13,8 @@ namespace SpaceGame.Actors
         // number of enemies that have been created in this wave
         private int enemiesCreated = 0;
 
-        [Tooltip("the amount of time that passes before a new enemy is spawned")]
-        public float spawnCooldown = 1.0f;
-
         // time that has passed since last enemy was spawned
         private float timeSinceSpawn = 0.0f;
-
-        [Tooltip("the height above the surface at which new enemies will spawn")]
-        public float spawnHeight = 3.0f;
 
         // creates new enemies
         private IPhysicalFactory factory;
@@ -50,7 +44,7 @@ namespace SpaceGame.Actors
             for (int i = 0; i < enemiesInWave; ++i) {
                 IPhysical enemy = factory.CreateEnemyShip();
 
-                SpawnPoint spawnPoint = planet.GetRandomSpawnPoint(spawnHeight);
+                SpawnPoint spawnPoint = planet.GetRandomSpawnPoint();
 
                 enemy.Position = spawnPoint.position;
                 enemy.Up = spawnPoint.orientation;
