@@ -5,7 +5,7 @@ using Fletch;
 namespace SpaceGame.Tests.Integration.ShipTests
 {
 
-    [IntegrationTest.DynamicTest( "ShipTests" )]
+    [IntegrationTest.DynamicTest("ShipTests")]
     class it_registers_with_the_controller_service_on_creation : ship_test
     {
 
@@ -14,14 +14,15 @@ namespace SpaceGame.Tests.Integration.ShipTests
         public override void SetUp ()
         {
             controller = (PCShipControllerFake)IOC.Resolve<IShipController>();
-            controller.registerCalled = 0;
+
+            controller.Expects("Register").ToBeCalled(1);
 
             base.SetUp();
         }
 
         void Test ()
         {
-            AssertThat( controller.registerCalled == 1 );
+            AssertThat(controller.MeetsExpectations());
         }
     }
 }

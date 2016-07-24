@@ -7,10 +7,10 @@ namespace SpaceGame.Actors
     public class Projectile : MonoBehaviour, IShootable
     {
 
-        [Tooltip( "The speed at which the projectile moves." )]
+        [Tooltip("The speed at which the projectile moves.")]
         public float speed = 20.0f;
 
-        [Tooltip( "The amount of time before the projectile stops." )]
+        [Tooltip("The amount of time before the projectile stops.")]
         public float lifeSpan = 2.0f;
 
         // true if bullet is currently being shot or otherwise moving
@@ -25,16 +25,14 @@ namespace SpaceGame.Actors
         // Update is called once per frame
         void Update ()
         {
-            if ( !active )
-            {
+            if (!active) {
                 return;
             }
 
             timeSinceFired += Time.deltaTime;
 
-            if ( timeSinceFired >= lifeSpan )
-            {
-                Destroy( gameObject );
+            if (timeSinceFired >= lifeSpan) {
+                Destroy(gameObject);
                 return;
             }
 
@@ -44,7 +42,7 @@ namespace SpaceGame.Actors
         }
 
         // Shoot the projectile in this direction
-        public void Shoot ( Vector3 startingPosition, Vector3 direction, Vector3 gravityCore )
+        public void Shoot (Vector3 startingPosition, Vector3 direction, Vector3 gravityCore)
         {
             transform.position = startingPosition;
             transform.forward = direction;

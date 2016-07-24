@@ -14,16 +14,16 @@ namespace SpaceGame.Tests.Integration.PhysicalBehaviourTests
         {
             base.SetUp();
 
-            gravity = ( GravityServiceFake ) IOC.Resolve<IGravityService>();
-            gravity.deregisterCalled = 0;
+            gravity = (GravityServiceFake)IOC.Resolve<IGravityService>();
 
-            Destroy( physical_object );
+            gravity.Expects("Resolve").ToBeCalled(1);
+
+            Destroy(physical_object);
         }
 
         void TestEachFrame ()
         {
-            if ( gravity.deregisterCalled == 1 )
-            {
+            if (gravity.MeetsExpectations()) {
                 Pass();
             }
         }

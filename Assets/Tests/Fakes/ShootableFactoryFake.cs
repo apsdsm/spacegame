@@ -1,19 +1,10 @@
-﻿using UnityEngine;
-using SpaceGame.Interfaces;
-using System;
+﻿using SpaceGame.Interfaces;
+using TestHelpers;
 
 namespace SpaceGame.Tests.Fakes
 {
-    class ShootableFactoryFake : MonoBehaviour, IShootableFactory
+    class ShootableFactoryFake : UFake, IShootableFactory
     {
-        public int createPlayerBulletCalled = 0;
-        public ShootableFake shootableFake;
-
-        public IShootable CreatePlayerBullet ()
-        {
-            createPlayerBulletCalled++;
-            shootableFake = new ShootableFake();
-            return shootableFake;
-        }
+        public IShootable CreatePlayerBullet () { return evaluateMethod<IShootable>("CreatePlayerBullet"); }
     }
 }

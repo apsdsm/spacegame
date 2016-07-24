@@ -1,72 +1,24 @@
 ﻿using UnityEngine;
 using SpaceGame.Interfaces;
-using System;
+using TestHelpers;
 
 namespace SpaceGame.Tests.Fakes
 {
-    public class PhysicalFake : IPhysical
+    public class PhysicalFake : UFake, IPhysical
     {
 
-        // add force
-
-        public int addForceCalled = 0;
-        public Vector3 addForceReceivedForce;
-
-        public void AddForce (Vector3 force)
-        {
-            addForceReceivedForce = force;
-            addForceCalled++;
-        }
-
-        // Position getter/setter
-
-        public int positionSet = 0;
-        public Vector3 positionSetWith;
-        public int positionGet = 0;
-        public Vector3 positionGetReturns;
+        public void AddForce (Vector3 force) { evaluateMethod("AddForce", force); }
 
         public Vector3 Position
         {
-            set {
-                positionSet++;
-                positionSetWith = value;
-            }
-
-            get {
-                positionGet++;
-                return positionGetReturns;
-            }
+            set { evaluateMethod("SetPosition", value); }
+            get { return evaluateMethod<Vector3>("GetPosition"); }
         }
-
-        // Up getter/setter
-
-        public int upSet = 0;
-        public Vector3 upSetWith;
-        public int upGet = 0;
-        public Vector3 upGetReturns;
 
         public Vector3 Up
         {
-            set {
-                upSet++;
-                upSetWith = value;
-            }
-
-            get {
-                upGet++;
-                return upGetReturns;
-            }
-        }
-
-        /// <summary>
-        /// Reset fake to default values.
-        /// </summary>
-        public void ResetFake ()
-        {
-            //addForceCalled = 0;
-            //getPositionCalled = 0;
-            //getPositionReturns = default(Vector3);
-            //setPositionCalled = 0;
+            set { evaluateMethod("SetUp", value); }
+            get { return evaluateMethod<Vector3>("GetUp"); }
         }
     }
 }

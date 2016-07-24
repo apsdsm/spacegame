@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using SpaceGame.Actors;
-using Fletch;
+using Flexo;
 using Fletch.Fakes;
 using TestHelpers;
 
@@ -18,10 +18,7 @@ namespace SpaceGame.Tests.Integration.PlanetTests
         {
             base.SetUp();
 
-            planet_object = GameObject.Find( "Planet" );
-            planet = planet_object.GetComponent<Planet>();
-
-            registry = (RegistryServiceFake)IOC.Resolve<IRegistryService>();
+            planet_object = new FlexoGameObject("planet").With<Planet>(out planet);
 
         }
 

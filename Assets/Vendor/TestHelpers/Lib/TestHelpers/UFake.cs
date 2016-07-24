@@ -8,6 +8,10 @@ namespace TestHelpers
 
     public class UFake : MonoBehaviour
     {
+        public class VoidType
+        {
+        }
+
         private class Expectation
         {
             public int calledCount = 0;
@@ -104,7 +108,7 @@ namespace TestHelpers
         /// <typeparam name="T">return type for method</typeparam>
         /// <param name="methodName">name of method</param>
         /// <param name="parameters">parameters passed to method</param>
-        /// <returns></returns>
+        /// <returns>any stored return value</returns>
         public T evaluateMethod<T> (string methodName, params object[] parameters)
         {
             foreach (Expectation expectation in expectations) {
@@ -122,6 +126,24 @@ namespace TestHelpers
             return default(T);
         }
 
+        /// <summary>
+        /// Call from inside method in the fake to keep track of which methods were called.
+        /// </summary>
+        /// <param name="methodName">name of method</param>
+        /// <param name="parameters">parameters passed to method</param>
+        public void evaluateMethod (string methodName, params object[] parameters)
+        {
+            foreach (Expectation expectation in expectations) {
+                if (expectation.methodName == methodName) {
+                    ++expectation.calledCount;
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reset the fake.
+        /// </summary>
         public void Done ()
         {
             expectations.Clear();

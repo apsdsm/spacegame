@@ -3,31 +3,44 @@ using SpaceGame.Tests.Fakes;
 using SpaceGame.Interfaces;
 using Fletch;
 using TestHelpers;
+using Fletch.Fakes;
 
 namespace SpaceGame.Tests.Integration.ShipTests
 {
-    [IntegrationTest.DynamicTest( "ShipTests" )]
+    [IntegrationTest.DynamicTest("ShipTests")]
     class it_shoots_a_projectile : ship_test
     {
+
+        RegistryServiceFake registry;
         ShootableFactoryFake factory;
+        ShootableFake shootable;
+        PlanetFake planet;
 
         public override void SetUp ()
         {
             base.SetUp();
 
-            factory = (ShootableFactoryFake)IOC.Resolve<IShootableFactory>();
-            factory.createPlayerBulletCalled = 0;
+            planet = new PlanetFake();
+            planet.Expects("CoreLocation").AndReturns(Vector3.zero);
 
+            registry = (RegistryServiceFake)IOC.Resolve<IRegistryService>();
+            registry.Expects("LookUp").With("Planet").AndReturns(planet);
+
+            shootable = new ShootableFake();
+            shootable.Expects("Shoot").ToBeCalled(1).With(ship_object.transform.forward, ship_object.transform.position, Vector3.zero);
+
+            factory = (ShootableFactoryFake)IOC.Resolve<IShootableFactory>();
+            factory.Expects("CreatePlayerBullet").ToBeCalled(1);
         }
 
         void Test ()
         {
             ship.Shoot();
 
-            AssertThat( factory.createPlayerBulletCalled == 1 );
-            AssertThat( factory.shootableFake.shootCalled == 1 );
-            AssertThat( factory.shootableFake.shootDirectionValue == ship_object.transform.forward );
-            AssertThat( factory.shootableFake.shootStartingPositionValue == ship_object.transform.position );
+            AssertThat(factory.MeetsExpectations());
+            AssertThat(shootable.MeetsExpectations());
+            AssertThat(registry.MeetsExpectations());
+            AssertThat(planet.MeetsExpectations());
         }
     }
 }

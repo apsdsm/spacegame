@@ -26,15 +26,9 @@ namespace SpaceGame.Tests.Integration.WaveManagerTests
             base.SetUp();
 
             planet = new PlanetFake();
-
             enemy = new PhysicalFake();
-
             factory = (PhysicalFactoryFake)IOC.Resolve<IPhysicalFactory>();
-
             registry = (RegistryServiceFake)IOC.Resolve<IRegistryService>();
-
-            registry.lookUpReturns = planet;
-
             wave_manager_object = new FlexoGameObject("wave_manager").With<WaveManager>(out wave_manager);
         }
 
@@ -47,10 +41,9 @@ namespace SpaceGame.Tests.Integration.WaveManagerTests
 
             // reset fakes
             factory.Done();
-
-            registry.ResetFake();
-            enemy.ResetFake();
-            planet.ResetFake();
+            registry.Done();
+            enemy.Done();
+            planet.Done();
         }
     }
 }

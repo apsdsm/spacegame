@@ -5,7 +5,7 @@ using Fletch;
 namespace SpaceGame.Tests.Integration.ShipTests
 {
 
-    [IntegrationTest.DynamicTest( "ShipTests" )]
+    [IntegrationTest.DynamicTest("ShipTests")]
     class it_deregisters_with_the_controller_service_on_destruction : ship_test
     {
 
@@ -15,16 +15,16 @@ namespace SpaceGame.Tests.Integration.ShipTests
         {
             base.SetUp();
 
-            controller = ( PCShipControllerFake ) IOC.Resolve<IShipController>();
-            controller.deregisterCalled = 0;
+            controller = (PCShipControllerFake)IOC.Resolve<IShipController>();
 
-            Destroy( ship_object );
+            controller.Expects("Deregister").ToBeCalled(1);
+
+            Destroy(ship_object);
         }
 
         void TestEachFrame ()
         {
-            if ( controller.deregisterCalled == 1 )
-            {
+            if (controller.MeetsExpectations()) {
                 Pass();
             }
         }
@@ -32,6 +32,8 @@ namespace SpaceGame.Tests.Integration.ShipTests
         public override void TearDown ()
         {
             // don't destroy the ship because it was destroyed as a part of this test
+
+            controller.Done();
         }
     }
 }

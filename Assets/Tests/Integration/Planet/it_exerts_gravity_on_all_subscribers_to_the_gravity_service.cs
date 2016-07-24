@@ -9,22 +9,27 @@ namespace SpaceGame.Tests.Integration.PlanetTests
     class it_exerts_gravity_on_all_subscribers_to_the_gravity_service : planet_test
     {
         GravityServiceFake gravity;
+        PhysicalFake target;
 
         public override void SetUp ()
         {
             base.SetUp();
 
+            target = new PhysicalFake();
+            target.Expects("AddForce").ToBeCalled(1);
+
             gravity = (GravityServiceFake)IOC.Resolve<IGravityService>();
+            gravity.Expects("Targets").ToBeCalled(1).AndReturns(new IPhysical[] { target });
+
+
         }
 
         void Test ()
         {
-            gravity.getTargetsCalled = 0;
-
             planet_object.SendMessage("Update");
 
-            AssertThat(gravity.getTargetsCalled == 1);
-            AssertThat(gravity.physicalFake.addForceCalled == 1);
+            AssertThat(gravity.MeetsExpectations());
+            AssertThat(target.MeetsExpectations());
         }
     }
 }

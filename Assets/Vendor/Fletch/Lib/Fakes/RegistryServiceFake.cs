@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using TestHelpers;
 
 namespace Fletch.Fakes
 {
@@ -9,133 +10,21 @@ namespace Fletch.Fakes
     /// the Registry class as expected. It goes without saying this service should
     /// not be used outside of a test environment.
     /// </summary>
-    public class RegistryServiceFake : MonoBehaviour, IRegistryService
+    public class RegistryServiceFake : UFake, IRegistryService
     {
-        // registration
-
-        public int registrationsCalled = 0;
-
-        public Registration[] registrationsReturns;
-
         public Registration[] Registrations
         {
-            get
-            {
-                if (registrationsReturns == null)
-                {
-                    registrationsReturns = new Registration[0];
-                }
-
-                registrationsCalled++;
-                return registrationsReturns;
-            }
+            get { return evaluateMethod<Registration[]>("Registrations"); }
         }
 
-        // deregister
+        public void Deregister<T> (string identifier) { evaluateMethod("Deregister", identifier); }
 
-        public int deregisterCalled = 0;
+        public void Flush () { evaluateMethod("Flush"); }
 
-        public Type deregisterReceivedType;
+        public T LookUp<T> (string identifier) { return evaluateMethod<T>("Lookup"); }
 
-        public string deregisterReceivedIdentifier;
+        public void Register<T> (string identifier, object reference) { evaluateMethod("Register", identifier, reference); }
 
-        public void Deregister<T>(string identifier)
-        {
-            deregisterCalled++;
-            deregisterReceivedType = typeof(T);
-            deregisterReceivedIdentifier = identifier;
-        }
-
-        // flush
-
-        public int flushCalled = 0;
-
-        public void Flush ()
-        {
-            flushCalled++;
-        }
-
-        // Lookup
-
-        public int lookUpCalled = 0;
-
-        public Type lookUpReceivedType;
-
-        public string lookUpReceivedIdentifier;
-
-        public object lookUpReturns;
-    
-        public T LookUp<T>(string identifier)
-        {
-            lookUpCalled++;
-
-            lookUpReceivedType = typeof(T);
-
-            lookUpReceivedIdentifier = identifier;
-
-            if (lookUpReturns == null)
-            {
-                lookUpReturns = default(T);
-            }
-            
-            return (T)lookUpReturns;
-        }
-
-        // register
-
-        public int registerCalled = 0;
-
-        public Type registerReceivedType;
-
-        public string registerReceivedIdentifier;
-
-        public object registerReceivedReference;
-
-        public void Register<T>(string identifier, object reference)
-        {
-            registerCalled++;
-
-            registerReceivedType = typeof(T);
-
-            registerReceivedIdentifier = identifier;
-
-            registerReceivedReference = reference;
-        }
-
-        // reserve
-
-        public int reserveCalled = 0;
-
-        public Type reserveReceivedType;
-
-        public string reserveReceivedIdentifier;
-
-        public object reserveReceivedReserver;
-
-        public void Reserve<T>(string identifier, object reserver)
-        {
-            reserveCalled++;
-
-            reserveReceivedType = typeof(T);
-
-            reserveReceivedIdentifier = identifier;
-
-            reserveReceivedReserver = reserver;
-        }
-
-        /// <summary>
-        /// Will reset the fake to its default settings.
-        /// </summary>
-        public void ResetFake ()
-        {
-            registrationsCalled = 0;
-            registrationsReturns = new Registration[0];
-            deregisterCalled = 0;
-            flushCalled = 0;
-            lookUpCalled = 0;
-            lookUpReturns = default(object);
-            registerCalled = 0;
-            reserveCalled = 0;
-        }
+        public void Reserve<T> (string identifier, object reserver) { evaluateMethod("Reserve", identifier, reserver); }
     }
 }

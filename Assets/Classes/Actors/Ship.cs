@@ -23,9 +23,6 @@ namespace SpaceGame.Actors
 
         // private planet reference
         private IPlanet planet;
-
-        // public setter
-        public IPlanet Planet { set { planet = value; } }
         
         /// <summary>
         /// Set up components and subscribe to services.
@@ -52,7 +49,7 @@ namespace SpaceGame.Actors
         /// </summary>
         void Start ()
         {
-            registry.Reserve<IPlanet>("Planet", this);
+            planet = registry.LookUp<IPlanet>("Planet");
         }
 
 

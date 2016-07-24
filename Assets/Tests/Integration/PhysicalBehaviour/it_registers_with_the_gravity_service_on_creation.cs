@@ -14,14 +14,15 @@ namespace SpaceGame.Tests.Integration.PhysicalBehaviourTests
         public override void SetUp ()
         {
             gravity = ( GravityServiceFake ) IOC.Resolve<IGravityService>();
-            gravity.registerCalled = 0;
+
+            gravity.Expects("Register").ToBeCalled(1);
 
             base.SetUp();
         }
 
         void Test ()
         {
-            AssertThat( gravity.registerCalled == 1 );
+            AssertThat(gravity.MeetsExpectations() );
         }
     }
 }

@@ -1,21 +1,12 @@
-﻿using UnityEngine;
-using SpaceGame.Interfaces;
+﻿using SpaceGame.Interfaces;
+using TestHelpers;
 
 namespace SpaceGame.Tests.Fakes
 {
-    class PCShipControllerFake : MonoBehaviour, IShipController
+    class PCShipControllerFake : UFake, IShipController
     {
-        public int registerCalled = 0;
-        public int deregisterCalled = 0;
+        public void Register ( IControllableShip ship ) { evaluateMethod("Register", ship); }
 
-        public void Register ( IControllableShip ship )
-        {
-            registerCalled++;
-        }
-
-        public void Deregister ( IControllableShip ship )
-        {
-            deregisterCalled++;
-        }
+        public void Deregister ( IControllableShip ship ) { evaluateMethod("Deregister", ship); }
     }
 }
