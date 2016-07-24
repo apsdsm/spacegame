@@ -31,8 +31,6 @@ namespace SpaceGame.Tests.Integration.WaveManagerTests
 
             factory = (PhysicalFactoryFake)IOC.Resolve<IPhysicalFactory>();
 
-            factory.createEnemyShipReturns = enemy;
-
             registry = (RegistryServiceFake)IOC.Resolve<IRegistryService>();
 
             registry.lookUpReturns = planet;
@@ -48,7 +46,8 @@ namespace SpaceGame.Tests.Integration.WaveManagerTests
             GameObject.Destroy(wave_manager_object);
 
             // reset fakes
-            factory.ResetFake();
+            factory.Done();
+
             registry.ResetFake();
             enemy.ResetFake();
             planet.ResetFake();

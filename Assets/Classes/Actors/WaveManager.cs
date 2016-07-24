@@ -46,6 +46,19 @@ namespace SpaceGame.Actors
         void Start ()
         {
             planet = registry.LookUp<IPlanet>("Planet");
+
+            for (int i = 0; i < enemiesInWave; ++i) {
+                IPhysical enemy = factory.CreateEnemyShip();
+
+                SpawnPoint spawnPoint = planet.GetRandomSpawnPoint(spawnHeight);
+
+                enemy.Position = spawnPoint.position;
+                enemy.Up = spawnPoint.orientation;
+
+                timeSinceSpawn = 0;
+
+                enemiesCreated++;
+            }
         }
 
         /// <summary>
@@ -54,26 +67,7 @@ namespace SpaceGame.Actors
         /// </summary>
         void Update ()
         {
-            if (enemiesCreated >= enemiesInWave)
-            {
-                return;
-            }
 
-            if (timeSinceSpawn >= spawnCooldown)
-            {
-                IPhysical enemy = factory.CreateEnemyShip();
-
-                SpawnPoint spawnPoint = planet.GetRandomSpawnPoint(spawnHeight);
-
-                enemy.Position = spawnPoint.position;
-                enemy.Up = spawnPoint.orientation;
-                
-                timeSinceSpawn = 0;
-
-                enemiesCreated++;
-            }
-
-            timeSinceSpawn += Time.deltaTime;
         }
     }
 }
