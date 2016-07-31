@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using SpaceGame;
 
 namespace SpaceGame.Interfaces
 {
@@ -11,18 +12,19 @@ namespace SpaceGame.Interfaces
         /// Add force to the object.
         /// </summary>
         /// <param name="force"></param>
-        void AddForce ( Vector3 force );
+        void AddForce (Vector3 force);
 
         /// <summary>
-        /// The object's current position.
+        /// Move the object to the specified locations
         /// </summary>
-        Vector3 Position
-        { get; set; }
+        /// <param name="location">where to move the object</param>
+        void MoveToLocation (Location location);
 
         /// <summary>
-        /// The object's current up axis
+        /// Get the current location of the object.
         /// </summary>
-        Vector3 Up
-        { get; set; }
+        /// <returns>Location</returns>
+        Location GetCurrentLocation ();
+
     }
 }

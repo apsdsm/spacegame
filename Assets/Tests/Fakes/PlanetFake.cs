@@ -10,6 +10,6 @@ namespace SpaceGame.Tests.Fakes
 
         public Vector3 CoreLocation { get { return evaluateMethod<Vector3>("GetCoreLocation"); } }
 
-        public SpawnPoint GetRandomSpawnPoint () { return evaluateMethod<SpawnPoint>("GetRandomSpawnPoint"); }
+        public Location GetRandomSpawnPoint () { return evaluateMethod<Location>("GetRandomSpawnPoint"); }
     }
 }

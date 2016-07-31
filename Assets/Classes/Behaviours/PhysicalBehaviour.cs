@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using SpaceGame.Interfaces;
 using Fletch;
+using System;
 
 namespace SpaceGame.Behaviours
 {
@@ -30,23 +31,36 @@ namespace SpaceGame.Behaviours
             rigid.useGravity = false;
         }
 
+        /// <summary>
+        /// Add force to the object.
+        /// </summary>
+        /// <param name="force"></param>
         public void AddForce (Vector3 force)
         {
             rigid.AddForce(force);
         }
 
-        public Vector3 Position
+        /// <summary>
+        /// Move the object to a location.
+        /// </summary>
+        /// <param name="location"></param>
+        public void MoveToLocation (Location location)
         {
-            set { transform.position = value; }
 
-            get { return transform.position; }
+            throw new NotImplementedException();
         }
-        
-        public Vector3 Up
-        {
-            set { transform.up = value; }
 
-            get { return transform.up; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Location GetCurrentLocation ()
+        {
+            Location location = new Location();
+            location.position = transform.position;
+            location.orientation = transform.up;
+
+            return location;
         }
     }
 }

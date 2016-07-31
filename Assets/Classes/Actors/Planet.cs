@@ -41,20 +41,14 @@ namespace SpaceGame.Actors
         /// </summary>
         void Update ()
         {
-            IPhysical[] targets = gravity.Targets();
-            
-            foreach (IPhysical target in targets)
-            {
-                Vector3 targetPosition = target.Position;
-                Vector3 gravityToTarget = transform.position - targetPosition;
-
-                target.AddForce(gravityToTarget);
-            }
+            ApplyGravity();
         }
 
-        public SpawnPoint GetRandomSpawnPoint ()
+        #region IPlanet Implemenation
+
+        public Location GetRandomSpawnPoint ()
         {
-            SpawnPoint spawnPoint = new SpawnPoint();
+            Location spawnPoint = new Location();
 
             spawnPoint.orientation = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
             spawnPoint.position = spawnPoint.orientation * surface.radius;
@@ -66,5 +60,23 @@ namespace SpaceGame.Actors
         {
             get { return transform.position; }
         }
+
+        #endregion
+
+        /// <summary>
+        /// Apply the gravity of the planet to each object in the gravity service.
+        /// </summary>
+        private void ApplyGravity ()
+        {
+            IPhysical[] targets = gravity.Targets();
+
+            foreach (IPhysical target in targets) {
+                Location targetLocation = target.GetCurrentLocation();
+                Vector3 gravityToTarget = transform.position - targetLocation.position;
+
+                target.AddForce(gravityToTarget);
+            }
+        }
+
     }
 }

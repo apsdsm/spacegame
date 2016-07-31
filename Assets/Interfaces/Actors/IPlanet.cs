@@ -9,7 +9,7 @@ namespace SpaceGame.Interfaces
         /// </summary>
         /// <param name="distanceFromSurface"></param>
         /// <returns>random spawn point above surface</returns>
-        SpawnPoint GetRandomSpawnPoint ();
+        Location GetRandomSpawnPoint ();
 
         /// <summary>
         /// Return the a position representing the planet's centre of mass.

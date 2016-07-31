@@ -7,7 +7,7 @@ namespace SpaceGame.Tests.Integration.PlanetTests
     {
         void Test ()
         {
-            SpawnPoint spawn_point = planet.GetRandomSpawnPoint();
+            Location spawn_point = planet.GetRandomSpawnPoint();
 
             AssertThat(spawn_point.position != Vector3.zero);
             AssertThat(spawn_point.orientation != Vector3.zero);

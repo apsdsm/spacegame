@@ -16,10 +16,12 @@ namespace SpaceGame.Tests.Integration.WaveManagerTests
         protected WaveManager wave_manager;
 
         // fakes
-        protected PhysicalFactoryFake factory;
+        protected PhysicalFactoryFake physical_factory;
+        protected CollectableFactoryFake collectable_factory;
         protected RegistryServiceFake registry;
         protected PlanetFake planet;
         protected PhysicalFake enemy;
+        protected CollectableFake collectable;
 
         public override void SetUp ()
         {
@@ -27,23 +29,29 @@ namespace SpaceGame.Tests.Integration.WaveManagerTests
 
             planet = new PlanetFake();
             enemy = new PhysicalFake();
-            factory = (PhysicalFactoryFake)IOC.Resolve<IPhysicalFactory>();
+            collectable = new CollectableFake();
+
+            physical_factory = (PhysicalFactoryFake)IOC.Resolve<IPhysicalFactory>();
+            collectable_factory = (CollectableFactoryFake)IOC.Resolve<ICollectableFactory>();
             registry = (RegistryServiceFake)IOC.Resolve<IRegistryService>();
+
             wave_manager_object = new FlexoGameObject("wave_manager").With<WaveManager>(out wave_manager);
+           
         }
 
         public override void TearDown ()
         {
             base.TearDown();
 
-            // destroy objects
             GameObject.Destroy(wave_manager_object);
 
-            // reset fakes
-            factory.Done();
+            physical_factory.Done();
+            collectable_factory.Done();
             registry.Done();
-            enemy.Done();
-            planet.Done();
+
+            //enemy.Done();
+            //collectable.Done();
+            //planet.Done();
         }
     }
 }

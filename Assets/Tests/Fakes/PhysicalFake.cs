@@ -1,24 +1,17 @@
 ﻿using UnityEngine;
+using SpaceGame;
 using SpaceGame.Interfaces;
 using TestHelpers;
+using System;
 
 namespace SpaceGame.Tests.Fakes
 {
     public class PhysicalFake : UFake, IPhysical
     {
-
         public void AddForce (Vector3 force) { evaluateMethod("AddForce", force); }
 
-        public Vector3 Position
-        {
-            set { evaluateMethod("SetPosition", value); }
-            get { return evaluateMethod<Vector3>("GetPosition"); }
-        }
+        public Location GetCurrentLocation () { return evaluateMethod<Location>("GetCurrentLocation"); }
 
-        public Vector3 Up
-        {
-            set { evaluateMethod("SetUp", value); }
-            get { return evaluateMethod<Vector3>("GetUp"); }
-        }
+        public void MoveToLocation (Location location) { evaluateMethod("MoveToLocation", location); }
     }
 }

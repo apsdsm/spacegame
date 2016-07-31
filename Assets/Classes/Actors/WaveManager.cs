@@ -10,19 +10,11 @@ namespace SpaceGame.Actors
         [Tooltip("the number of enemies that will be in the current wave")]
         public int enemiesInWave = 0;
 
-        // number of enemies that have been created in this wave
-        private int enemiesCreated = 0;
-
-        // time that has passed since last enemy was spawned
-        private float timeSinceSpawn = 0.0f;
-
-        // creates new enemies
+        [Tooltip("the number of coins that will be in the current wave")]
+        public int coinsInWave = 0;
+                
         private IPhysicalFactory factory;
-
-        // provides references to other actors
         private IRegistryService registry;
-
-        // provides locations to spawn enemies
         private IPlanet planet;
 
         /// <summary>
@@ -44,14 +36,9 @@ namespace SpaceGame.Actors
             for (int i = 0; i < enemiesInWave; ++i) {
                 IPhysical enemy = factory.CreateEnemyShip();
 
-                SpawnPoint spawnPoint = planet.GetRandomSpawnPoint();
+                Location spawnPoint = planet.GetRandomSpawnPoint();
 
-                enemy.Position = spawnPoint.position;
-                enemy.Up = spawnPoint.orientation;
-
-                timeSinceSpawn = 0;
-
-                enemiesCreated++;
+                enemy.MoveToLocation(spawnPoint);
             }
         }
 

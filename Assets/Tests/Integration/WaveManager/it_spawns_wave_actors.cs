@@ -11,14 +11,19 @@ namespace SpaceGame.Tests.Integration.WaveManagerTests
         {
             base.SetUp();
 
-            factory.Expects("CreateEnemyShip").ToBeCalled(1).AndReturns(enemy);
+            collectable_factory.Expects("CreateCoin").ToBeCalled(1).AndReturns(collectable);
+
+            physical_factory.Expects("CreateEnemyShip").ToBeCalled(1).AndReturns(enemy);
             
             wave_manager.enemiesInWave = 1;
+
+            wave_manager.coinsInWave = 1;
         }
 
         void Test ()
         {
-            AssertThat(factory.MeetsExpectations());
+            AssertThat(physical_factory.MeetsExpectations());
+            AssertThat(collectable_factory.MeetsExpectations());
         }
     }
 }
