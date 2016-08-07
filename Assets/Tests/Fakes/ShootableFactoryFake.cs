@@ -5,6 +5,9 @@ namespace SpaceGame.Tests.Fakes
 {
     class ShootableFactoryFake : UFake, IShootableFactory
     {
-        public IShootable CreatePlayerBullet () { return evaluateMethod<IShootable>("CreatePlayerBullet"); }
+        public IShootable CreatePlayerBullet()
+        {
+            return Evaluate<IShootable>(Call("CreatePlayerBullet"));
+        }
     }
 }

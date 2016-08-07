@@ -13,7 +13,8 @@ namespace SpaceGame.Actors
         [Tooltip("the number of coins that will be in the current wave")]
         public int coinsInWave = 0;
                 
-        private IPhysicalFactory factory;
+		private IPhysicalFactory physicalFactory;
+		private ICollectableFactory collectableFactory;
         private IRegistryService registry;
         private IPlanet planet;
 
@@ -22,7 +23,8 @@ namespace SpaceGame.Actors
         /// </summary>
         void Awake ()
         {
-            factory = IOC.Resolve<IPhysicalFactory>();
+            physicalFactory = IOC.Resolve<IPhysicalFactory>();
+			collectableFactory = IOC.Resolve<ICollectableFactory>();
             registry = IOC.Resolve<IRegistryService>();
         }
 
@@ -34,12 +36,16 @@ namespace SpaceGame.Actors
             planet = registry.LookUp<IPlanet>("Planet");
 
             for (int i = 0; i < enemiesInWave; ++i) {
-                IPhysical enemy = factory.CreateEnemyShip();
-
+                IPhysical enemy = physicalFactory.CreateEnemyShip();
                 Location spawnPoint = planet.GetRandomSpawnPoint();
-
                 enemy.MoveToLocation(spawnPoint);
             }
+
+			for (int i = 0; i < coinsInWave; i++) {
+			    ICollectable collectable = collectableFactory.CreateCoin();
+                Location spawnPoint = planet.GetRandomSpawnPoint();
+                collectable.MoveToLocation(spawnPoint);
+			}
         }
 
         /// <summary>

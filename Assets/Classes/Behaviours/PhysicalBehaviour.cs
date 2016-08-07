@@ -46,8 +46,8 @@ namespace SpaceGame.Behaviours
         /// <param name="location"></param>
         public void MoveToLocation (Location location)
         {
-
-            throw new NotImplementedException();
+            transform.position = location.position;
+            transform.up = location.orientation;
         }
 
         /// <summary>

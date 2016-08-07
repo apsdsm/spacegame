@@ -6,10 +6,14 @@ namespace SpaceGame.Tests.Fakes
 {
     public class PlanetFake : UFake, IPlanet
     {
-        public Vector3 getCoreLocationReturns;
+        public Vector3 CoreLocation
+        { 
+            get { return Evaluate<Vector3>(Call("GetCoreLocation")); }
+        }
 
-        public Vector3 CoreLocation { get { return evaluateMethod<Vector3>("GetCoreLocation"); } }
-
-        public Location GetRandomSpawnPoint () { return evaluateMethod<Location>("GetRandomSpawnPoint"); }
+        public Location GetRandomSpawnPoint()
+        {
+            return Evaluate<Location>(Call("GetRandomSpawnPoint"));
+        }
     }
 }

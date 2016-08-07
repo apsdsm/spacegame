@@ -5,8 +5,14 @@ namespace SpaceGame.Tests.Fakes
 {
     public class PhysicalFactoryFake : UFake, IPhysicalFactory
     {
-        public IPhysical CreateEnemyShip () { return evaluateMethod<IPhysical>("CreateEnemyShip"); }
+        public IPhysical CreateEnemyShip()
+        { 
+            return Evaluate<IPhysical>(Call("CreateEnemyShip"));
+        }
 
-        public IPhysical CreatePlayerShip () { return evaluateMethod<IPhysical>("CreatePlayerShip"); }
+        public IPhysical CreatePlayerShip()
+        {
+            return Evaluate<IPhysical>(Call("CreatePlayerShip"));
+        }
     }
 }

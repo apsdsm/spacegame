@@ -27,13 +27,23 @@ namespace SpaceGame.Tests.Integration.WaveManagerTests
         {
             base.SetUp();
 
+            // create fakes
+
             planet = new PlanetFake();
+
             enemy = new PhysicalFake();
+
             collectable = new CollectableFake();
 
+            // collect references to scene fakes
+
             physical_factory = (PhysicalFactoryFake)IOC.Resolve<IPhysicalFactory>();
+
             collectable_factory = (CollectableFactoryFake)IOC.Resolve<ICollectableFactory>();
+
             registry = (RegistryServiceFake)IOC.Resolve<IRegistryService>();
+
+            // create new SUT
 
             wave_manager_object = new FlexoGameObject("wave_manager").With<WaveManager>(out wave_manager);
            
@@ -48,10 +58,6 @@ namespace SpaceGame.Tests.Integration.WaveManagerTests
             physical_factory.Done();
             collectable_factory.Done();
             registry.Done();
-
-            //enemy.Done();
-            //collectable.Done();
-            //planet.Done();
         }
     }
 }

@@ -11,7 +11,8 @@ namespace SpaceGame.Tests.Integration.ShipFactoryTests
         {
             IPhysical result = ship_factory.CreateEnemyShip();
 
-            AssertThat( result != null, "created object was null" );
+            AssertThat( result != null, "created object was null." );
+
         }
     }
 }

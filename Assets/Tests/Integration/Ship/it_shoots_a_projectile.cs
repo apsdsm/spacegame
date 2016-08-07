@@ -21,10 +21,10 @@ namespace SpaceGame.Tests.Integration.ShipTests
             base.SetUp();
 
             planet = new PlanetFake();
-            planet.Expects("CoreLocation").AndReturns(Vector3.zero);
+            planet.Expects("CoreLocation").AndReturns<Vector3>(Vector3.zero);
 
             registry = (RegistryServiceFake)IOC.Resolve<IRegistryService>();
-            registry.Expects("LookUp").With("Planet").AndReturns(planet);
+            registry.Expects("LookUp").With("Planet").AndReturns<IPlanet>(planet);
 
             shootable = new ShootableFake();
             shootable.Expects("Shoot").ToBeCalled(1).With(ship_object.transform.forward, ship_object.transform.position, Vector3.zero);

@@ -14,17 +14,32 @@ namespace Fletch.Fakes
     {
         public Registration[] Registrations
         {
-            get { return evaluateMethod<Registration[]>("Registrations"); }
+            get { return Evaluate<Registration[]>(Call("Registrations")); }
         }
 
-        public void Deregister<T> (string identifier) { evaluateMethod("Deregister", identifier); }
+        public void Deregister<T>(string identifier)
+        {
+            Evaluate(Call("Deregister").With(identifier));
+        }
 
-        public void Flush () { evaluateMethod("Flush"); }
+        public void Flush()
+        {
+            Evaluate(Call("Flush"));
+        }
 
-        public T LookUp<T> (string identifier) { return evaluateMethod<T>("Lookup"); }
+        public T LookUp<T>(string identifier)
+        {
+            return Evaluate<T>(Call<T>("LookUp").With(identifier));
+        }
 
-        public void Register<T> (string identifier, object reference) { evaluateMethod("Register", identifier, reference); }
+        public void Register<T>(string identifier, object reference)
+        {
+            Evaluate(Call<T>("Register").With(identifier, reference));
+        }
 
-        public void Reserve<T> (string identifier, object reserver) { evaluateMethod("Reserve", identifier, reserver); }
+        public void Reserve<T>(string identifier, object reserver)
+        {
+            Evaluate(Call<T>("Reserve").With(identifier, reserver));
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace SpaceGame.Tests.Integration.PlanetTests
             target.Expects("AddForce").ToBeCalled(1);
 
             gravity = (GravityServiceFake)IOC.Resolve<IGravityService>();
-            gravity.Expects("Targets").ToBeCalled(1).AndReturns(new IPhysical[] { target });
+            gravity.Expects("Targets").ToBeCalled(1).AndReturns<IPhysical[]>(new IPhysical[] { target });
 
 
         }

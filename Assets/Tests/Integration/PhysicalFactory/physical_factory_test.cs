@@ -9,8 +9,6 @@ namespace SpaceGame.Tests.Integration.ShipFactoryTests
     {
         // sut
         protected PhysicalFactory ship_factory;
-
-        // game object
         protected GameObject ship_factory_object;
 
         /// <summary>

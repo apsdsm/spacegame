@@ -8,10 +8,19 @@ namespace SpaceGame.Tests.Fakes
 {
     public class PhysicalFake : UFake, IPhysical
     {
-        public void AddForce (Vector3 force) { evaluateMethod("AddForce", force); }
+        public void AddForce(Vector3 force)
+        {
+            Evaluate(Call("AddForce").With(force));
+        }
 
-        public Location GetCurrentLocation () { return evaluateMethod<Location>("GetCurrentLocation"); }
+        public Location GetCurrentLocation()
+        {
+            return Evaluate<Location>(Call("GetCurrentLocation"));
+        }
 
-        public void MoveToLocation (Location location) { evaluateMethod("MoveToLocation", location); }
+        public void MoveToLocation(Location location)
+        {
+            Evaluate(Call("MoveToLocation").With(location));
+        }
     }
 }
