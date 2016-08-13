@@ -9,6 +9,7 @@ namespace Fletch
     /// </summary>
     public interface IRegistryService
     {
+
         /// <summary>
         /// Registers a single object in the registry
         /// </summary>
@@ -17,6 +18,16 @@ namespace Fletch
         /// <param name="reference">a reference to the object</param>
         void Register<T>( string identifier, object reference );
 
+
+        /// <summary>
+        /// Registers to a named list.
+        /// </summary>
+        /// <param name="listName">name of the list.</param>
+        /// <param name="reference">object to add.</param>
+        /// <typeparam name="T">type of object contained in the list.</typeparam>
+        void RegisterToList<T>(string listName, object reference);
+
+        T[] GetList<T>(string listName);
 
         /// <summary>
         /// Deregister a single object in the registry

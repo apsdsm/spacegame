@@ -21,6 +21,12 @@ namespace SpaceGame.Interfaces
         void MoveToLocation (Location location);
 
         /// <summary>
+        /// Get object current velcity
+        /// </summary>
+        /// <returns>The velocity.</returns>
+        Vector3 GetVelocity ();
+
+        /// <summary>
         /// Get the current location of the object.
         /// </summary>
         /// <returns>Location</returns>

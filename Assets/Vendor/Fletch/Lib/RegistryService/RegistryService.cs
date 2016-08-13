@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System;
 
 using System;
 
@@ -9,11 +10,10 @@ namespace Fletch
 {
     public class RegistryService : MonoBehaviour, IRegistryService
     {
+        private List<RegistrationList> registrationLists = new List<RegistrationList>();
 
-        // private list of registrations
         private List<Registration> registrations = new List<Registration>();
 
-        // private list of reservations
         private List<Reservation> reservations = new List<Reservation>();
 
         /// <summary>
@@ -25,9 +25,44 @@ namespace Fletch
             }
         }
 
+        /// <summary>
+        /// Registers object to a list. This can probably replace a lot of 'list' based services.
+        /// </summary>
+        /// <returns>The to list.</returns>
+        /// <param name="listName">List name.</param>
+        /// <param name="reference">Reference.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void RegisterToList<T>(string listName, object reference)
+        {
+            RegistrationList list = registrationLists.Find(r => r.listName == listName);
+
+            if (list.listName == null) {
+                list.listName = listName;
+                list.type = typeof(T);
+                list.registrations = new List<object>();
+                registrationLists.Add(list);
+            }
+                      
+            list.registrations.Add(reference);
+        }
+
+        public T[] GetList<T>(string listName)
+        {
+            RegistrationList list = registrationLists.Find(r => r.listName == listName);
+
+            if (list.listName == null) {
+                return new T[0];
+            }
+
+            object[] rawArray = list.registrations.ToArray();
+
+            T[] returnArray = Array.ConvertAll(rawArray, item => (T)item);
+
+            return returnArray;
+        }
 
         /// <summary>
-        /// Register a new object using generics.
+        /// Register a new object using generics. This can probably replace a lot of 'singleton' type objects.
         /// </summary>
         /// <typeparam name="T">type of object to register as</typeparam>
         /// <param name="identifier">string identifier for object</param>
@@ -54,6 +89,8 @@ namespace Fletch
                 }
             }
         }
+
+
 
         /// <summary>
         /// Deletes any existing registrations and reservations.
@@ -128,5 +165,7 @@ namespace Fletch
 
             return (T)reference;
         }
+
+
     }
 }

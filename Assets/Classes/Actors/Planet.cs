@@ -18,6 +18,7 @@ namespace SpaceGame.Actors
         // allows other objects to access the planet with direct relation
         private IRegistryService registry;
 
+        private RegistrationList wantsGravity;
 
         /// <summary>
         /// Set up planet.
@@ -35,17 +36,15 @@ namespace SpaceGame.Actors
             registry.Register<IPlanet>("Planet", this);
         }
 
+      
 
         /// <summary>
         /// Enact gravity on any object subscribed to the gravity registry.
         /// </summary>
         void Update ()
         {
-            ApplyGravity();
         }
-
-        #region IPlanet Implemenation
-
+            
         public Location GetRandomSpawnPoint ()
         {
             Location spawnPoint = new Location();
@@ -56,27 +55,15 @@ namespace SpaceGame.Actors
             return spawnPoint;
         }
 
-        public Vector3 CoreLocation
+        public Vector3 core
         {
             get { return transform.position; }
         }
-
-        #endregion
-
-        /// <summary>
-        /// Apply the gravity of the planet to each object in the gravity service.
-        /// </summary>
-        private void ApplyGravity ()
+            
+        public float GetDistanceFromSurface(Vector3 point)
         {
-            IPhysical[] targets = gravity.Targets();
-
-            foreach (IPhysical target in targets) {
-                Location targetLocation = target.GetCurrentLocation();
-                Vector3 gravityToTarget = transform.position - targetLocation.position;
-
-                target.AddForce(gravityToTarget);
-            }
+            Vector3 closestPoint = surface.ClosestPointOnBounds(point);
+            return (point - closestPoint).magnitude;
         }
-
     }
 }

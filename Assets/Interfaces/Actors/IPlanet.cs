@@ -15,6 +15,8 @@ namespace SpaceGame.Interfaces
         /// Return the a position representing the planet's centre of mass.
         /// </summary>
         /// <returns>position of planet</returns>
-        Vector3 CoreLocation { get; }
+        Vector3 core { get; }
+
+        float GetDistanceFromSurface(Vector3 position);
     }
 }

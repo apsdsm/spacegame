@@ -5,62 +5,81 @@ using System;
 
 namespace SpaceGame.Behaviours
 {
-    [RequireComponent(typeof(Rigidbody))]
     class PhysicalBehaviour : MonoBehaviour, IPhysical
     {
+        private IRegistryService registry;
+
+        private IPlanet planet;
+
+        private Vector3 velocity;
+
         private Rigidbody rigid;
 
-        private IGravityService gravity;
+        [Tooltip("the fastest speed the object can reach")]
+        public float topSpeed = 10.0f;
 
         void Awake ()
         {
-            gravity = IOC.Resolve<IGravityService>();
+            registry = IOC.Resolve<IRegistryService>();
 
-            gravity.Register(this);
-        }
-
-        void OnDestroy ()
-        {
-            gravity.Deregister(this);
         }
 
         void Start ()
         {
-            rigid = GetComponent<Rigidbody>();
+            // get references
+            planet = registry.LookUp<IPlanet>("Planet");
 
+            // get components
+            rigid = GetComponent<Rigidbody>();
+            rigid.constraints = RigidbodyConstraints.FreezeRotation;
             rigid.useGravity = false;
         }
 
-        /// <summary>
-        /// Add force to the object.
-        /// </summary>
-        /// <param name="force"></param>
+        void Update ()
+        {
+            Vector3 correctUp = (transform.position - planet.core).normalized;
+            Vector3 currentUp = transform.up;
+
+            Quaternion correctRotation = Quaternion.FromToRotation(currentUp, correctUp) * transform.rotation;
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, correctRotation, 10 * Time.deltaTime);        
+        }
+
+        void FixedUpdate ()
+        {
+            Vector3 gravity = (planet.core - transform.position).normalized * (10.0f + planet.GetDistanceFromSurface(transform.position));
+
+            rigid.AddForce(gravity);
+
+            if (rigid.velocity.magnitude > topSpeed) {
+                rigid.velocity = rigid.velocity.normalized * topSpeed;
+            }
+        }
+
+        // IPhysical.AddForce
         public void AddForce (Vector3 force)
         {
             rigid.AddForce(force);
         }
 
-        /// <summary>
-        /// Move the object to a location.
-        /// </summary>
-        /// <param name="location"></param>
+
+        // IPhysical.MoveToLocation
         public void MoveToLocation (Location location)
         {
             transform.position = location.position;
             transform.up = location.orientation;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+        // IPhysical.GetCurrentLocation
         public Location GetCurrentLocation ()
         {
-            Location location = new Location();
-            location.position = transform.position;
-            location.orientation = transform.up;
+            return new Location(){position = transform.position, orientation = transform.up};
+        }
 
-            return location;
+        // IPhysical.GetVelocity
+        public Vector3 GetVelocity ()
+        {
+            return velocity;
         }
     }
 }

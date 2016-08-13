@@ -5,12 +5,18 @@ using Fletch;
 
 namespace SpaceGame.Actors
 {
-    [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(PhysicalBehaviour))]
     public class Ship : MonoBehaviour, IControllableShip
     {
-        // controls the ships movement
-        private Rigidbody rigid;
+
+
+        public float cruiseAcceleration = 20.0f;
+
+        [Tooltip("how quickly the ship starts moving")]
+        public float acceleration = 5.0f;
+
+        [Tooltip("how quickly the ship can turn")]
+        public float rotation = 5.0f;
 
         // controls the ships movements
         private IShipController controller;
@@ -23,22 +29,22 @@ namespace SpaceGame.Actors
 
         // private planet reference
         private IPlanet planet;
-        
+
+        private PhysicalBehaviour physical;
+
         /// <summary>
         /// Set up components and subscribe to services.
         /// </summary>
         void Awake ()
         {
-            // get components
-            rigid = GetComponent<Rigidbody>();
-
-            // setup components
-            rigid.useGravity = false;
 
             // get services
             controller = IOC.Resolve<IShipController>();
             bullets = IOC.Resolve<IShootableFactory>();
             registry = IOC.Resolve<IRegistryService>();
+
+            // get components
+            physical = GetComponent<PhysicalBehaviour>();
 
             // subscribe to services
             controller.Register(this);
@@ -50,6 +56,13 @@ namespace SpaceGame.Actors
         void Start ()
         {
             planet = registry.LookUp<IPlanet>("Planet");
+        }
+
+        void Update ()
+        {
+            Debug.DrawRay(transform.position, transform.up * 2.0f, Color.red);
+            Debug.DrawRay(transform.position, transform.forward * 2.0f, Color.blue);
+
         }
 
 
@@ -68,7 +81,7 @@ namespace SpaceGame.Actors
         /// <param name="thrust">amount of thrust to add</param>
         public void AddLongitudinalThrust (float thrust)
         {
-            rigid.AddRelativeForce(Vector3.forward * thrust);
+            physical.AddForce(transform.forward * thrust * acceleration);
         }
 
 
@@ -78,7 +91,7 @@ namespace SpaceGame.Actors
         /// <param name="thrust">amount of thrust to add</param>
         public void AddRotationalThrust (float thrust)
         {
-            rigid.AddRelativeTorque(Vector3.up * thrust);
+            transform.RotateAround(transform.position, transform.up, thrust * rotation);
         }
 
 
@@ -87,7 +100,8 @@ namespace SpaceGame.Actors
         /// </summary>
         public void Shoot ()
         {
-            bullets.CreatePlayerBullet().Shoot(transform.position, transform.forward, planet.CoreLocation);
+            bullets.CreatePlayerBullet().Shoot(transform.position, transform.forward, planet.core);
         }
+            
     }
 }

@@ -4,10 +4,8 @@ using SpaceGame.Interfaces;
 
 namespace SpaceGame.Services
 {
-
     public class GravityService : MonoBehaviour, IGravityService
     {
-
         List<IPhysical> targets = new List<IPhysical>();
 
         /// <summary>
