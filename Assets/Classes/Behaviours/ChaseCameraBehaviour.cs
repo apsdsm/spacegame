@@ -23,9 +23,9 @@ namespace SpaceGame.Behaviours
                 return;
             }
 
-            PhysicalBehaviour physical = target.GetComponent<PhysicalBehaviour>();
+            Rigidbody physical = target.GetComponent<Rigidbody>();
 
-            Vector3 velocity = physical.GetVelocity();
+            Vector3 velocity = physical.velocity;
             
             Vector3 idealPosition = target.position - velocity + (Quaternion.AngleAxis(angle, target.transform.right) * target.forward * -distance);
 
