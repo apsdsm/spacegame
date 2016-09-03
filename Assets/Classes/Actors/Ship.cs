@@ -2,11 +2,12 @@
 using SpaceGame.Interfaces;
 using SpaceGame.Behaviours;
 using Fletch;
+using System;
 
 namespace SpaceGame.Actors
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class Ship : MonoBehaviour, IControllableShip
+    public class Ship : MonoBehaviour, IControllable, IPhysical
     {
 
         [Tooltip("basic speed of ship")]
@@ -18,6 +19,9 @@ namespace SpaceGame.Actors
         [Tooltip("how quickly the ship can turn")]
         public float rotation = 5.0f;
 
+        [Tooltip("how far off the surface of the planet the ship should be")]
+        public float distanceFromSurface = 1.0f;
+
         private IShipController controller;
 
         private IShootableFactory bullets;
@@ -27,6 +31,8 @@ namespace SpaceGame.Actors
         private IPlanet planet;
 
         private Rigidbody rigid;
+
+        private Vector3 calculatedVelocity;
 
         /// <summary>
         /// Set up components and subscribe to services.
@@ -75,14 +81,18 @@ namespace SpaceGame.Actors
 
         void FixedUpdate ()
         {
-            // add gracity to object
-            Vector3 gravity = (planet.core - transform.position).normalized * (10.0f + planet.GetDistanceFromSurface(transform.position));
-            rigid.AddForce(gravity);
+            // get a new forward position
+            Vector3 newPosition = transform.position + (transform.forward * cruiseSpeed * Time.deltaTime);
 
-            // make sure speed isn't above cruise speed
-            if (rigid.velocity.magnitude > cruiseSpeed) {
-                rigid.velocity = rigid.velocity.normalized * cruiseSpeed;
-            }
+            // adjust height to be over planet
+            Vector3 heightNormalised = (newPosition - planet.core).normalized * (planet.surface.radius);
+
+            // get new velocity
+            calculatedVelocity = (heightNormalised - transform.position).normalized * cruiseSpeed;
+
+            // move to new position
+            rigid.MovePosition(heightNormalised);
+           
         }
 
 
@@ -112,7 +122,7 @@ namespace SpaceGame.Actors
         /// <param name="thrust">amount of thrust to add</param>
         public void AddRotationalThrust (float thrust)
         {
-            transform.RotateAround(transform.position, transform.up, thrust * rotation);
+            transform.RotateAround(transform.position, transform.up, (thrust * rotation) * Time.deltaTime);
         }
 
 
@@ -122,6 +132,45 @@ namespace SpaceGame.Actors
         public void Shoot ()
         {
             bullets.CreatePlayerBullet().Shoot(transform.position, transform.forward, planet.core);
+        }
+
+        public void AddForce(Vector3 force)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveToLocation(Location location)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        /// <summary>
+        /// Gets the ship's current velocity.
+        /// </summary>
+        public Vector3 velocity {
+            get { return calculatedVelocity; }
+        }
+
+        /// <summary>
+        /// Gets the ship's current position.
+        /// </summary>
+        public Vector3 position {
+            get { return transform.position; }
+        }
+
+        /// <summary>
+        /// Gets the forward angle.
+        /// </summary>
+        public Vector3 forward {
+            get { return transform.forward; }
+        }
+
+        /// <summary>
+        /// Gets the right angle.
+        /// </summary>
+        public Vector3 right {
+            get { return transform.right; }
         }
     }
 }

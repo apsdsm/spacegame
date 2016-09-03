@@ -17,6 +17,8 @@ namespace SpaceGame.Interfaces
         /// <returns>position of planet</returns>
         Vector3 core { get; }
 
+        SphereCollider surface { get; }
+
         float GetDistanceFromSurface(Vector3 position);
     }
 }

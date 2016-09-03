@@ -10,7 +10,9 @@ namespace SpaceGame.Actors
     public class Planet : MonoBehaviour, IPlanet
     {
         // describes the size and surface of the planet
-        private SphereCollider surface;
+        private SphereCollider sphereCollider;
+
+        public float spawnHeight = 4.0f;
 
         // keeps a list of which objects want gravity
         private IGravityService gravity;
@@ -18,15 +20,13 @@ namespace SpaceGame.Actors
         // allows other objects to access the planet with direct relation
         private IRegistryService registry;
 
-        private RegistrationList wantsGravity;
-
         /// <summary>
         /// Set up planet.
         /// </summary>
         void Awake ()
         {
             // get components
-            surface = GetComponent<SphereCollider>();
+            sphereCollider = GetComponent<SphereCollider>();
 
             // resolve services
             gravity = IOC.Resolve<IGravityService>();
@@ -36,8 +36,7 @@ namespace SpaceGame.Actors
             registry.Register<IPlanet>("Planet", this);
         }
 
-      
-
+     
         /// <summary>
         /// Enact gravity on any object subscribed to the gravity registry.
         /// </summary>
@@ -50,7 +49,7 @@ namespace SpaceGame.Actors
             Location spawnPoint = new Location();
 
             spawnPoint.orientation = new Vector3(Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f), Random.Range(-1.0f, 1.0f)).normalized;
-            spawnPoint.position = spawnPoint.orientation * surface.radius;
+            spawnPoint.position = spawnPoint.orientation * (sphereCollider.radius + spawnHeight);
 
             return spawnPoint;
         }
@@ -59,10 +58,15 @@ namespace SpaceGame.Actors
         {
             get { return transform.position; }
         }
+
+        public SphereCollider surface 
+        {
+            get { return sphereCollider; }
+        }
             
         public float GetDistanceFromSurface(Vector3 point)
         {
-            Vector3 closestPoint = surface.ClosestPointOnBounds(point);
+            Vector3 closestPoint = sphereCollider.ClosestPointOnBounds(point);
             return (point - closestPoint).magnitude;
         }
     }

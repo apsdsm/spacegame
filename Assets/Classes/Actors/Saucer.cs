@@ -6,16 +6,43 @@ using System;
 namespace SpaceGame.Actors
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class Saucer : MonoBehaviour, IDestroyable
+    public class Saucer : MonoBehaviour, IDestroyable, IEnemy
     {
+
+        private enum State
+        {
+            Normal,
+            Damaged,
+            Destructing,
+            Destroyed
+        }
+
         [Tooltip("how much damage the object can take before it is destroyed")]
-        public float health = 10.0f;
+        public float health = 30.0f;
 
-        public float acceleration = 20.0f;
+        [Tooltip("point at which the saucer starts to show damage effects")]
+        public float criticalDamagePoint = 15.0f;
 
-        private float speed = 2.0f;
+        [Tooltip("how far the player needs to be before the enemy will chase them")]
+        public float chaseDistance = 10.0f;
+
+        [Tooltip("the basic speed of the enemy")]
+        public float cruiseSpeed = 15.0f;
+
+        [Tooltip("contains particle effect for impacts")]
+        public GameObject impactEffect;
+
+        [Tooltip("contains particle effect for damage smoke")]
+        public GameObject damageSmokeEffect;
+
+        [Tooltip("contains particle effect for destroy explosion")]
+        public GameObject destroyEffect;
+
+        private State state = State.Normal;
 
         private IRegistryService registry;
+
+        private IScoreService score;
 
         private Rigidbody rigid;
 
@@ -23,9 +50,12 @@ namespace SpaceGame.Actors
 
         private IPlanet planet;
 
+        private ParticleSystem destroyEffectSystem;
+
         void Awake()
         {
             registry = IOC.Resolve<IRegistryService>();
+            score = IOC.Resolve<IScoreService>();
 
             rigid = GetComponent<Rigidbody>();
             rigid.useGravity = false;
@@ -37,8 +67,8 @@ namespace SpaceGame.Actors
             ship = registry.LookUp<Ship>("Ship");
             planet = registry.LookUp<IPlanet>("Planet");
         }
-            
-        void Update ()
+
+        void Update()
         {
             // get the current up angle and the correct up angle
             Vector3 correctUp = (transform.position - planet.core).normalized;
@@ -48,33 +78,99 @@ namespace SpaceGame.Actors
             Quaternion correctRotation = Quaternion.FromToRotation(currentUp, correctUp) * transform.rotation;
 
             // slerp towards the correct rotation
-            transform.rotation = Quaternion.Slerp(transform.rotation, correctRotation, 10 * Time.deltaTime);   
+            transform.rotation = Quaternion.Slerp(transform.rotation, correctRotation, 10 * Time.deltaTime);
         }
 
         void FixedUpdate()
         {
-            // project vector to player onto the saucer's X Z plane, then move towards that direction
-            Vector3 vectorToPlayer = (ship.transform.position - transform.position).normalized;
-            Vector3 projectedToPlayer = Vector3.ProjectOnPlane(vectorToPlayer, transform.up);
-            Vector3 newPosition = transform.position + projectedToPlayer.normalized * speed * Time.deltaTime;
-            rigid.MovePosition(newPosition);
+            if (state == State.Destructing) { 
 
-            // calculte gravity
-            Vector3 gravity = (planet.core - transform.position).normalized * (10.0f + planet.GetDistanceFromSurface(transform.position));
-            rigid.AddForce(gravity);
+                if (destroyEffect != null) {
+                    if (!destroyEffectSystem.GetComponent<ParticleSystem>().IsAlive(true)) {
+                        Destroy(gameObject);
+                    }
+                }
+                    
+            } else {
+
+                if (ship == null) {
+                    return;
+                }
+
+                // distance to player - calc the distance between two points on unit sphere, then multiply by the planet radius to get real distance
+                float distanceToPlayer = Mathf.Acos(Vector3.Dot(transform.position.normalized, ship.transform.position.normalized)) * planet.surface.radius;
+
+                Vector3 newPosition = transform.position;
+
+                if (distanceToPlayer > chaseDistance) {
+                    // project vector to player onto the saucer's X Z plane, then move towards that direction
+                    Vector3 vectorToPlayer = (ship.transform.position - transform.position).normalized;
+                    Vector3 projectedToPlayer = Vector3.ProjectOnPlane(vectorToPlayer, transform.up);
+
+                    newPosition = transform.position + projectedToPlayer.normalized * cruiseSpeed * Time.deltaTime;
+                }
+
+                // adjust height to be over planet
+                Vector3 heightNormalised = (newPosition - planet.core).normalized * planet.surface.radius;
+
+                rigid.MovePosition(heightNormalised);
+            }
+
         }
 
+        /// <summary>
+        /// The saucer takes damage.
+        /// </summary>
+        /// <param name="damage">ammount of damage that saucer will take</param>
         public void Damage(Damage damage)
         {
+            if (state >= State.Destructing) {
+                return;
+            }
+
             health -= damage.ammount;
 
+            if (impactEffect != null) {
+                GameObject effect = Instantiate(impactEffect);
+                effect.transform.parent = transform;
+                effect.transform.position = transform.position;
+            }
+
             if (health <= 0.0f) {
-                Debug.Log("I was destroyed");
-                Destroy(gameObject);
+
+                if (destroyEffect != null) {
+                    GameObject effect = Instantiate(destroyEffect);
+                    effect.transform.parent = transform;
+                    effect.transform.position = transform.position;
+
+                    destroyEffectSystem = effect.GetComponent<ParticleSystem>();
+                }
+
+                state = State.Destructing;
+
+                return;
             }
-            else {
-                Debug.Log("I was damaged");
+
+            if (health <= criticalDamagePoint && state < State.Damaged) {
+
+                if (damageSmokeEffect != null) {
+                    GameObject effect = Instantiate(damageSmokeEffect);
+                    effect.transform.parent = transform;
+                    effect.transform.position = transform.position;
+                }
+
+                state = State.Damaged;
             }
+        }
+
+        /// <summary>
+        /// Move saucer to location.
+        /// </summary>
+        /// <param name="location">moves to this location</param>
+        public void MoveToLocation(Location location)
+        {
+            transform.position = location.position;
+            transform.up = location.orientation;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using SpaceGame.Actors;
 
 namespace SpaceGame.Behaviours
 {
@@ -17,17 +18,21 @@ namespace SpaceGame.Behaviours
 
         public float rotationDamping = 4.0f;
 
+        private Ship ship;
+
+        void Awake()
+        {
+            ship = target.GetComponent<Ship>();
+        }
+
         void LateUpdate ()
         {
             if (!target) {
                 return;
             }
+                
 
-            Rigidbody physical = target.GetComponent<Rigidbody>();
-
-            Vector3 velocity = physical.velocity;
-            
-            Vector3 idealPosition = target.position - velocity + (Quaternion.AngleAxis(angle, target.transform.right) * target.forward * -distance);
+            Vector3 idealPosition = ship.position - ship.velocity + (Quaternion.AngleAxis(angle, ship.right) * ship.forward * -distance);
 
             transform.position = idealPosition;
 
