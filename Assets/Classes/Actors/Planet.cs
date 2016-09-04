@@ -14,9 +14,6 @@ namespace SpaceGame.Actors
 
         public float spawnHeight = 4.0f;
 
-        // keeps a list of which objects want gravity
-        private IGravityService gravity;
-
         // allows other objects to access the planet with direct relation
         private IRegistryService registry;
 
@@ -29,7 +26,6 @@ namespace SpaceGame.Actors
             sphereCollider = GetComponent<SphereCollider>();
 
             // resolve services
-            gravity = IOC.Resolve<IGravityService>();
             registry = IOC.Resolve<IRegistryService>();
 
             // register object
@@ -64,10 +60,5 @@ namespace SpaceGame.Actors
             get { return sphereCollider; }
         }
             
-        public float GetDistanceFromSurface(Vector3 point)
-        {
-            Vector3 closestPoint = sphereCollider.ClosestPointOnBounds(point);
-            return (point - closestPoint).magnitude;
-        }
     }
 }

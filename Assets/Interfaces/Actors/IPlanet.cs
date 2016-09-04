@@ -17,8 +17,9 @@ namespace SpaceGame.Interfaces
         /// <returns>position of planet</returns>
         Vector3 core { get; }
 
+        /// <summary>
+        /// Return the sphere collider representing the surface the game takes place on.
+        /// </summary>
         SphereCollider surface { get; }
-
-        float GetDistanceFromSurface(Vector3 position);
     }
 }

@@ -21,10 +21,13 @@ namespace SpaceGame.Actors
         private WaveData.Wave currentWave;
 
         // creates enemies
-        private IEnemyFactory enemyFactory;
+        private IEnemyFactory enemies;
 
         // creates coins
-        private ICollectableFactory collectableFactory;
+        private ICollectableFactory collectables;
+
+        // control the round timer
+        private ITimeService time;
 
         // find other objects
         private IRegistryService registry;
@@ -40,11 +43,24 @@ namespace SpaceGame.Actors
         /// </summary>
         void Awake()
         {
-            enemyFactory = IOC.Resolve<IEnemyFactory>();
-            collectableFactory = IOC.Resolve<ICollectableFactory>();
+            enemies = IOC.Resolve<IEnemyFactory>();
+
+            collectables = IOC.Resolve<ICollectableFactory>();
+
+            time = IOC.Resolve<ITimeService>();
+
             registry = IOC.Resolve<IRegistryService>();
 
             enemyList = new List<Saucer>();
+        }
+
+        /// <summary>
+        /// resolve references to other actors. 
+        /// TODO: Move this logic to a 'wave start' that is executed after showing wave info.
+        /// </summary>
+        void Start()
+        {
+            planet = registry.LookUp<IPlanet>("Planet");
 
             if (waveData == null) {
                 throw new ReferenceNotFoundException("Wave manager cannot find wave data.");
@@ -55,30 +71,23 @@ namespace SpaceGame.Actors
             }
 
             currentWave = waveData.waves[0];
-        }
 
-        /// <summary>
-        /// resolve references to other actors
-        /// </summary>
-        void Start()
-        {
-            planet = registry.LookUp<IPlanet>("Planet");
-
-            for (int i = 0; i < currentWave.saucers; ++i)
-            {
-                IEnemy enemy = enemyFactory.CreateSaucer();
+            for (int i = 0; i < currentWave.saucers; ++i) {
+                IEnemy enemy = enemies.CreateSaucer();
                 Location spawnPoint = planet.GetRandomSpawnPoint();
                 enemy.MoveToLocation(spawnPoint);
 
                 enemyList.Add((Saucer)enemy);
             }
 
-            for (int i = 0; i < coinsInWave; i++)
-            {
-                ICollectable collectable = collectableFactory.CreateCoin();
+            for (int i = 0; i < coinsInWave; i++) {
+                ICollectable collectable = collectables.CreateCoin();
                 Location spawnPoint = planet.GetRandomSpawnPoint();
                 collectable.MoveToLocation(spawnPoint);
             }
+
+            time.SetCountdown(10);
+            time.StartCountdown();
         }
     }
 }

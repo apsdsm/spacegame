@@ -2,18 +2,25 @@
 using System.Collections;
 using SpaceGame.Interfaces;
 using System;
+using SpaceGame.Events;
 
 public class ScoreService : MonoBehaviour, IScoreService
 {
     private int score;
 
-    public void AddToScore (int points)
+    public int currentScore
     {
-        score += points;
+        get { return currentScore; }
     }
 
-    public int GetScore ()
+    public event ScoreUpdatedEvent ScoreUpdated;
+
+    public void AddToScore(int points)
     {
-        return score;
+        score += points;
+
+        if (ScoreUpdated != null) {
+            ScoreUpdated(score);
+        }
     }
 }

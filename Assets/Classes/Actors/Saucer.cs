@@ -29,6 +29,9 @@ namespace SpaceGame.Actors
         [Tooltip("the basic speed of the enemy")]
         public float cruiseSpeed = 15.0f;
 
+        [Tooltip("how many points this enemy is worth")]
+        public int points = 2000;
+
         [Tooltip("contains particle effect for impacts")]
         public GameObject impactEffect;
 
@@ -87,6 +90,7 @@ namespace SpaceGame.Actors
 
                 if (destroyEffect != null) {
                     if (!destroyEffectSystem.GetComponent<ParticleSystem>().IsAlive(true)) {
+                        state = State.Destroyed;
                         Destroy(gameObject);
                     }
                 }
@@ -115,7 +119,6 @@ namespace SpaceGame.Actors
 
                 rigid.MovePosition(heightNormalised);
             }
-
         }
 
         /// <summary>
@@ -138,6 +141,8 @@ namespace SpaceGame.Actors
 
             if (health <= 0.0f) {
 
+                score.AddToScore(points);
+
                 if (destroyEffect != null) {
                     GameObject effect = Instantiate(destroyEffect);
                     effect.transform.parent = transform;
@@ -152,7 +157,7 @@ namespace SpaceGame.Actors
             }
 
             if (health <= criticalDamagePoint && state < State.Damaged) {
-
+                               
                 if (damageSmokeEffect != null) {
                     GameObject effect = Instantiate(damageSmokeEffect);
                     effect.transform.parent = transform;
