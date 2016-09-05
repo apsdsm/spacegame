@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+
 using SpaceGame.Interfaces;
 using Fletch;
 using System.Collections.Generic;
@@ -52,6 +54,9 @@ namespace SpaceGame.Actors
             registry = IOC.Resolve<IRegistryService>();
 
             enemyList = new List<Saucer>();
+
+            // subscribe to the countdown finished event
+            time.CountdownFinished += OnCountdownFinished;
         }
 
         /// <summary>
@@ -86,8 +91,20 @@ namespace SpaceGame.Actors
                 collectable.MoveToLocation(spawnPoint);
             }
 
+            // set and start countdown
             time.SetCountdown(10);
             time.StartCountdown();
+        }
+
+        /// <summary>
+        /// When the countdown is finished, end the game.
+        /// For now just kick the player back to the main menu.
+        /// Why does switching back and forth between scenes cause massive issues?
+        /// Debug this more carefully...
+        /// </summary>
+        void OnCountdownFinished()
+        {
+            SceneManager.LoadScene("MainMenu");
         }
     }
 }
