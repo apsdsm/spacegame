@@ -52,6 +52,7 @@ namespace SpaceGame.Actors
             // register with services and controllers
             controller.Register(this);
             registry.Register<Ship>("Ship", this);
+            
         }
 
         /// <summary>
