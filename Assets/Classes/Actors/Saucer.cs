@@ -41,6 +41,9 @@ namespace SpaceGame.Actors
         [Tooltip("contains particle effect for destroy explosion")]
         public GameObject destroyEffect;
 
+        [Tooltip("Spped at which object falls to earth after being destroyed")]
+        public float dropSpeed = 4.0f;
+
         private State state = State.Normal;
 
         private IRegistryService registry;
@@ -86,8 +89,13 @@ namespace SpaceGame.Actors
 
         void FixedUpdate()
         {
-            if (state == State.Destructing) { 
+            if (state == State.Destructing) {
 
+                // drop the ship down towards the core of the planet
+                Vector3 toPlanet = planet.core - transform.position;
+                rigid.AddForce(toPlanet * (dropSpeed * Time.deltaTime));
+
+                // if the particle effect is over, remove the saucer from the game
                 if (destroyEffect != null) {
                     if (!destroyEffectSystem.GetComponent<ParticleSystem>().IsAlive(true)) {
                         state = State.Destroyed;
@@ -141,16 +149,21 @@ namespace SpaceGame.Actors
 
             if (health <= 0.0f) {
 
+                // add points to score
                 score.AddToScore(points);
 
+                // turn off collisions
+                GetComponent<SphereCollider>().enabled = false;
+
+                // create and play destroy effect
                 if (destroyEffect != null) {
                     GameObject effect = Instantiate(destroyEffect);
                     effect.transform.parent = transform;
                     effect.transform.position = transform.position;
-
                     destroyEffectSystem = effect.GetComponent<ParticleSystem>();
                 }
 
+                // set state to destructing
                 state = State.Destructing;
 
                 return;

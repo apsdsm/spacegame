@@ -12,6 +12,7 @@ namespace SpaceGame.Actors
         // describes the size and surface of the planet
         private SphereCollider sphereCollider;
 
+        [Tooltip("distance above surface to return spawn points")]
         public float spawnHeight = 4.0f;
 
         // allows other objects to access the planet with direct relation
@@ -30,14 +31,6 @@ namespace SpaceGame.Actors
 
             // register object
             registry.Register<IPlanet>("Planet", this);
-        }
-
-     
-        /// <summary>
-        /// Enact gravity on any object subscribed to the gravity registry.
-        /// </summary>
-        void Update ()
-        {
         }
             
         public Location GetRandomSpawnPoint ()
