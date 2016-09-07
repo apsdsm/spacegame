@@ -41,12 +41,14 @@ namespace SpaceGame.Actors
         [Tooltip("contains particle effect for destroy explosion")]
         public GameObject destroyEffect;
 
-        [Tooltip("Spped at which object falls to earth after being destroyed")]
+        [Tooltip("Speed at which object falls to earth after being destroyed")]
         public float dropSpeed = 4.0f;
 
         private State state = State.Normal;
 
         private IRegistryService registry;
+
+        private ICollectableFactory collectables;
 
         private IScoreService score;
 
@@ -61,6 +63,7 @@ namespace SpaceGame.Actors
         void Awake()
         {
             registry = IOC.Resolve<IRegistryService>();
+            collectables = IOC.Resolve<ICollectableFactory>();
             score = IOC.Resolve<IScoreService>();
 
             rigid = GetComponent<Rigidbody>();
@@ -154,6 +157,10 @@ namespace SpaceGame.Actors
 
                 // turn off collisions
                 GetComponent<SphereCollider>().enabled = false;
+
+                // drop some energy
+                ICollectable energyBall = collectables.CreateEnergyBall();
+                energyBall.MoveToLocation(new Location(transform.position, transform.up));
 
                 // create and play destroy effect
                 if (destroyEffect != null) {

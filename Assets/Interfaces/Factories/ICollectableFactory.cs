@@ -9,6 +9,6 @@
         /// Create and return a coin.
         /// </summary>
         /// <returns>GameObject that instantiates coin prefab</returns>
-        ICollectable CreateCoin ();
+        ICollectable CreateEnergyBall ();
     }
 }

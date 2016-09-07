@@ -7,14 +7,14 @@ namespace SpaceGame.Factories
 {
     public class CollectableFactory : MonoBehaviour, ICollectableFactory
     {
-        [Tooltip("Collectable coin the player can pick up")]
-        public GameObject coin;
+        [Tooltip("Energy ball the player can pick up")]
+        public GameObject energyBall;
 
-        public ICollectable CreateCoin ()
+        public ICollectable CreateEnergyBall ()
         {
-            GameObject newObject = Instantiate(coin);
+            GameObject newObject = Instantiate(energyBall);
             newObject.transform.parent = this.transform;
-            ICollectable component = newObject.GetComponent<CollectableBehaviour>();
+            ICollectable component = newObject.GetComponent<ICollectable>();
             return component;
         }
     }

@@ -14,9 +14,6 @@ namespace SpaceGame.Actors
         [Tooltip("the number of enemies that will be in the current wave")]
         public int enemiesInWave = 0;
 
-        [Tooltip("the number of coins that will be in the current wave")]
-        public int coinsInWave = 0;
-
         [Tooltip("data about the waves in the game")]
         public WaveData waveData;
 
@@ -24,9 +21,6 @@ namespace SpaceGame.Actors
 
         // creates enemies
         private IEnemyFactory enemies;
-
-        // creates coins
-        private ICollectableFactory collectables;
 
         // control the round timer
         private ITimeService time;
@@ -46,8 +40,6 @@ namespace SpaceGame.Actors
         void Awake()
         {
             enemies = IOC.Resolve<IEnemyFactory>();
-
-            collectables = IOC.Resolve<ICollectableFactory>();
 
             time = IOC.Resolve<ITimeService>();
 
@@ -83,12 +75,6 @@ namespace SpaceGame.Actors
                 enemy.MoveToLocation(spawnPoint);
 
                 enemyList.Add((Saucer)enemy);
-            }
-
-            for (int i = 0; i < coinsInWave; i++) {
-                ICollectable collectable = collectables.CreateCoin();
-                Location spawnPoint = planet.GetRandomSpawnPoint();
-                collectable.MoveToLocation(spawnPoint);
             }
 
             // set and start countdown
