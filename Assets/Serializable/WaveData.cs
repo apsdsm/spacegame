@@ -17,6 +17,7 @@ namespace SpaceGame
         public class Wave
         {
             public int saucers;
+            public int time;
         }
 
         public Wave[] waves;

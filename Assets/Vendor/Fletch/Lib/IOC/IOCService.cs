@@ -18,34 +18,40 @@ namespace Fletch
     public class IOCService : MonoBehaviour, IIocService
     {
 
+        // IOC will persist between level loads
+        public bool persistAlways = false;
+
         // list of the services that are attached to this IOC Container
         private List<ServiceReference> services = new List<ServiceReference>();
+
+        void Awake()
+        {
+            if (persistAlways) {
+                DontDestroyOnLoad(gameObject);
+            }
+        }
 
         /// <summary>
         /// Looks through each child object, seeking for classes that implement
         /// a interface that ends with one of the keywords: 'Service', 'Factory',
         /// 'Manager', or 'Controller, and adding those to the service directory.
         /// </summary>
-        public void Populate ()
+        public void Populate()
         {
-            foreach (Transform child in transform)
-            {
-                foreach (Component component in child.GetComponents<Component>())
-                {
-                    foreach (Type type in component.GetType().GetInterfaces())
-                    {
-                        string typeString = type.ToString();
+            foreach (Transform child in transform) {
 
-                        if (typeString.EndsWith( "Service" ) || 
-                            typeString.EndsWith( "Factory" ) || 
-                            typeString.EndsWith( "Manager") ||
-                            typeString.EndsWith( "Controller" ) )
-                        {
+                if (persistAlways) {
+                    DontDestroyOnLoad(transform.gameObject);
+                }
+
+                foreach (Component component in child.GetComponents<Component>()) {
+                    if (component != child.transform) {
+                        foreach (Type type in component.GetType().GetInterfaces()) {
                             ServiceReference serviceReference = new ServiceReference();
                             serviceReference.type = type;
                             serviceReference.reference = component;
 
-                            services.Add( serviceReference );
+                            services.Add(serviceReference);
                         }
                     }
                 }
@@ -58,8 +64,7 @@ namespace Fletch
         /// </summary>
         public ServiceReference[] Services
         {
-            get
-            {
+            get {
                 return services.ToArray();
             }
         }

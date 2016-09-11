@@ -3,6 +3,7 @@ using SpaceGame.Interfaces;
 using SpaceGame.Behaviours;
 using SpaceGame.Actors;
 using System;
+using SpaceGame.Events;
 
 namespace SpaceGame.Factories
 {
@@ -11,11 +12,12 @@ namespace SpaceGame.Factories
 
         [Tooltip("Saucer enemy")]
         public GameObject saucer;
+        
 
-        /// <summary>
-        /// Create an enemy saucer and return a component that satisfies IEnemy.
-        /// </summary>
-        /// <returns></returns>
+
+        // IEnemyFactory
+        //
+
         public IEnemy CreateSaucer()
         {
             GameObject enemyGameObject = Instantiate(saucer);

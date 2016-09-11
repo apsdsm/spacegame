@@ -86,7 +86,6 @@ public class TimeService : MonoBehaviour, ITimeService
             } else if ((int)Math.Ceiling(time) < lastWholeSecond) {
                 lastWholeSecond = (int)Math.Ceiling(time);
                 OnTimeUpdated();
-
             }
         }
     }

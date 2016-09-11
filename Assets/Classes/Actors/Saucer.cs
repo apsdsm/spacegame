@@ -2,6 +2,7 @@
 using SpaceGame.Interfaces;
 using Fletch;
 using System;
+using SpaceGame.Events;
 
 namespace SpaceGame.Actors
 {
@@ -60,6 +61,11 @@ namespace SpaceGame.Actors
 
         private ParticleSystem destroyEffectSystem;
 
+
+
+        // MonoBehaviour
+        //
+
         void Awake()
         {
             registry = IOC.Resolve<IRegistryService>();
@@ -93,51 +99,44 @@ namespace SpaceGame.Actors
         void FixedUpdate()
         {
             if (state == State.Destructing) {
+                OnDestructing();
+                return;
 
-                // drop the ship down towards the core of the planet
-                Vector3 toPlanet = planet.core - transform.position;
-                rigid.AddForce(toPlanet * (dropSpeed * Time.deltaTime));
-
-                // if the particle effect is over, remove the saucer from the game
-                if (destroyEffect != null) {
-                    if (!destroyEffectSystem.GetComponent<ParticleSystem>().IsAlive(true)) {
-                        state = State.Destroyed;
-                        Destroy(gameObject);
-                    }
-                }
-                    
-            } else {
-
-                if (ship == null) {
-                    return;
-                }
-
-                // distance to player - calc the distance between two points on unit sphere, then multiply by the planet radius to get real distance
-                float distanceToPlayer = Mathf.Acos(Vector3.Dot(transform.position.normalized, ship.transform.position.normalized)) * planet.surface.radius;
-
-                Vector3 newPosition = transform.position;
-
-                if (distanceToPlayer > chaseDistance) {
-                    // project vector to player onto the saucer's X Z plane, then move towards that direction
-                    Vector3 vectorToPlayer = (ship.transform.position - transform.position).normalized;
-                    Vector3 projectedToPlayer = Vector3.ProjectOnPlane(vectorToPlayer, transform.up);
-
-                    newPosition = transform.position + projectedToPlayer.normalized * cruiseSpeed * Time.deltaTime;
-                }
-
-                // adjust height to be over planet
-                Vector3 heightNormalised = (newPosition - planet.core).normalized * planet.surface.radius;
-
-                rigid.MovePosition(heightNormalised);
             }
+
+            if (ship == null) {
+                return;
+            }
+
+            // distance to player - calc the distance between two points on unit sphere, then multiply by the planet radius to get real distance
+            float distanceToPlayer = Mathf.Acos(Vector3.Dot(transform.position.normalized, ship.transform.position.normalized)) * planet.surface.radius;
+
+            Vector3 newPosition = transform.position;
+
+            if (distanceToPlayer > chaseDistance) {
+
+                // project vector to player onto the saucer's X Z plane, then move towards that direction
+                Vector3 vectorToPlayer = (ship.transform.position - transform.position).normalized;
+                Vector3 projectedToPlayer = Vector3.ProjectOnPlane(vectorToPlayer, transform.up);
+
+                newPosition = transform.position + projectedToPlayer.normalized * cruiseSpeed * Time.deltaTime;
+            }
+
+            // adjust height to be over planet
+            Vector3 heightNormalised = (newPosition - planet.core).normalized * planet.surface.radius;
+
+            rigid.MovePosition(heightNormalised);
+            
         }
 
-        /// <summary>
-        /// The saucer takes damage.
-        /// </summary>
-        /// <param name="damage">ammount of damage that saucer will take</param>
+
+
+        // IDestroyable
+        //
+
         public void Damage(Damage damage)
         {
+            // if this object is already destructing or destroyed, don't do anything
             if (state >= State.Destructing) {
                 return;
             }
@@ -148,6 +147,17 @@ namespace SpaceGame.Actors
                 GameObject effect = Instantiate(impactEffect);
                 effect.transform.parent = transform;
                 effect.transform.position = transform.position;
+            }
+
+            if (health <= criticalDamagePoint && state < State.Damaged) {
+
+                if (damageSmokeEffect != null) {
+                    GameObject effect = Instantiate(damageSmokeEffect);
+                    effect.transform.parent = transform;
+                    effect.transform.position = transform.position;
+                }
+
+                state = State.Damaged;
             }
 
             if (health <= 0.0f) {
@@ -173,29 +183,56 @@ namespace SpaceGame.Actors
                 // set state to destructing
                 state = State.Destructing;
 
-                return;
-            }
-
-            if (health <= criticalDamagePoint && state < State.Damaged) {
-                               
-                if (damageSmokeEffect != null) {
-                    GameObject effect = Instantiate(damageSmokeEffect);
-                    effect.transform.parent = transform;
-                    effect.transform.position = transform.position;
-                }
-
-                state = State.Damaged;
+                // let subscribers know it was destroyed
+                OnDestroyed();
             }
         }
 
-        /// <summary>
-        /// Move saucer to location.
-        /// </summary>
-        /// <param name="location">moves to this location</param>
+
+
+        // IEnemy
+        //
+
+        public event EnemyDestroyedEvent destroyed;
+
         public void MoveToLocation(Location location)
         {
             transform.position = location.position;
             transform.up = location.orientation;
+        }
+
+
+
+        // Private
+        //
+
+        /// <summary>
+        /// While saucer is destructing it will start the explosion particle effect. 
+        /// When the effect is over, it will remove itself from the game.
+        /// </summary>
+        private void OnDestructing()
+        {
+            // drop the ship down towards the core of the planet
+            Vector3 toPlanet = planet.core - transform.position;
+            rigid.AddForce(toPlanet * (dropSpeed * Time.deltaTime));
+
+            // if the particle effect is over, remove the saucer from the game
+            if (destroyEffect != null) {
+                if (!destroyEffectSystem.GetComponent<ParticleSystem>().IsAlive(true)) {
+                    state = State.Destroyed;
+                    Destroy(gameObject);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Informs subscribers that this enemy has been destroyed.
+        /// </summary>
+        private void OnDestroyed()
+        {
+            if (destroyed != null) {
+                destroyed(this);
+            }
         }
     }
 }

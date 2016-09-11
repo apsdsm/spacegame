@@ -12,6 +12,7 @@ namespace SpaceGame.Importers
             {
                 asset.waves[0] = new WaveData.Wave();
                 asset.waves[0].saucers = readBundle.validatedNodes[i].AsInt32("Saucers");
+                asset.waves[0].time = readBundle.validatedNodes[i].AsInt32("Time");
             }
         }
     }

@@ -1,4 +1,8 @@
-﻿namespace SpaceGame.Interfaces
+﻿
+// game
+using SpaceGame.Events;
+
+namespace SpaceGame.Interfaces
 {
     /// <summary>
     /// Interface for the ship factory class.
