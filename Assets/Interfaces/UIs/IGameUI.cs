@@ -33,10 +33,20 @@ namespace SpaceGame.Interfaces
         /// switch the game over trigger.
         /// </summary>
         void TriggerGameOver();
+
+        /// <summary>
+        /// switch the game win trigger.
+        /// </summary>
+        void TriggerGameWin();
         
         /// <summary>
         /// Fires when the wave start animation finishes
         /// </summary>
         event AnimationFinishedEvent waveStartAnimationFinished;
+
+        /// <summary>
+        /// Fires when the wave end animation finishes
+        /// </summary>
+        event AnimationFinishedEvent waveEndAnimationFinished;
     }
 }

@@ -45,12 +45,15 @@ namespace SpaceGame.Actors
         void Awake()
         {
             time = IOC.Resolve<ITimeService>();
+
             time.TimeUpdated += UpdateTimeText;
 
             score = IOC.Resolve<IScoreService>();
+
             score.ScoreUpdated += UpdateScoreText;
 
             registry = IOC.Resolve<IRegistryService>();
+
             registry.Register<IGameUI>("GameUI", this);
 
             animator = GetComponent<Animator>();
@@ -71,12 +74,24 @@ namespace SpaceGame.Actors
             }
         }
 
+        /// <summary>
+        /// Fires the waveEndAnimationFinished event if there are any subscribers.
+        /// </summary>
+        public void OnWaveEndAnimationFinished()
+        {
+            if (waveEndAnimationFinished != null) {
+                waveEndAnimationFinished();
+            }
+        }
+
         
 
         // IGameUI 
         //
 
         public event AnimationFinishedEvent waveStartAnimationFinished;
+
+        public event AnimationFinishedEvent waveEndAnimationFinished;
 
         public void SetWaveText(string waveTitle)
         {
@@ -85,12 +100,17 @@ namespace SpaceGame.Actors
 
         public void TriggerGameOver()
         {
-            throw new NotImplementedException();
+            animator.SetTrigger("ShowGameOver");
+        }
+
+        public void TriggerGameWin()
+        {
+            animator.SetTrigger("ShowGameWin");
         }
 
         public void TriggerShowWaveVictory()
         {
-            throw new NotImplementedException();
+            animator.SetTrigger("ShowWaveVictory");
         }
 
         public void TriggerStartGame()
@@ -124,6 +144,7 @@ namespace SpaceGame.Actors
         void UpdateTimeText(int time)
         {
             int seconds = time % 60;
+
             int minutes = (time - seconds) / 60;
 
             timeText.text = minutes.ToString().PadLeft(2, '0') + ":" + seconds.ToString().PadLeft(2, '0');
