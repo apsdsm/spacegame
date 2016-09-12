@@ -37,6 +37,9 @@ namespace SpaceGame.Actors
 
         [Tooltip("how long to show wave end title")]
         public float showWaveEndTime = 1.0f;
+
+        [Tooltip("how much time to grant as bonus after wave ends")]
+        public int bonusTimeAfterWave = 10;
         
         // Factories
         private IEnemyFactory enemies;
@@ -153,7 +156,6 @@ namespace SpaceGame.Actors
         /// </summary>
         void OnWaveEndFinished()
         {
-            currentWave = waveData.waves[currentWaveIndex];
             state = State.StartingWave;
         }
 
@@ -177,6 +179,8 @@ namespace SpaceGame.Actors
                     state = State.WonGame;
 
                 } else {
+                    time.AddSeconds(bonusTimeAfterWave);
+                    currentWave = waveData.waves[currentWaveIndex];
                     gameUI.TriggerShowWaveVictory();
                     state = State.WaitingForWaveEndFinish;
                 }
