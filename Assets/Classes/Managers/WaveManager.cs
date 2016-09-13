@@ -17,11 +17,7 @@ namespace SpaceGame.Actors
         // states for the wave manager
         public enum State
         {
-            StartingWave,
-            WaitingForWaveStartFinish,
             PlayingGame,
-            StartingWaveEnd,
-            WaitingForWaveEndFinish,
             LostGame,
             WonGame
         }
@@ -58,7 +54,7 @@ namespace SpaceGame.Actors
         private List<IEnemy> enemyList;
 
         // wave manager current state
-        private State state = State.StartingWave;
+        private State state = State.PlayingGame;
 
         // reference to current wave
         private WaveData.Wave currentWave;
@@ -67,125 +63,195 @@ namespace SpaceGame.Actors
         private int currentWaveIndex = 0;
 
         /// <summary>
-        /// resolve references to services.
+        /// Set up internal data objects. Resolve references to services.
         /// </summary>
         void Awake()
         {
-            enemies = IOC.Resolve<IEnemyFactory>();
+            // initialize wave info
+            currentWaveIndex = 0;
 
-            time = IOC.Resolve<ITimeService>();
-            time.CountdownFinished += OnCountdownFinished;
+            // get pointer to current wave
+            currentWave = waveData.waves[0];
 
-            registry = IOC.Resolve<IRegistryService>();
-
+            // create new list to hold enemy references
             enemyList = new List<IEnemy>();
+
+            // resolve services
+            enemies = IOC.Resolve<IEnemyFactory>();
+            time = IOC.Resolve<ITimeService>();
+            registry = IOC.Resolve<IRegistryService>();
         }
 
         /// <summary>
-        /// resolve references to actors or ui.
+        /// resolve references to non-service entities.
+        /// subscribe to events.
         /// </summary>
         void Start()
         {
+            // get registry lookups
             planet = registry.LookUp<IPlanet>("Planet");
-
             gameUI = registry.LookUp<IGameUI>("GameUI");
-            gameUI.waveStartAnimationFinished += OnWaveStartFinished;
-            gameUI.waveEndAnimationFinished += OnWaveEndFinished;
 
-            currentWaveIndex = 0;
+            // subscribe to events
+            gameUI.onWaveStartAnimationFinished += OnWaveStartAnimationFinished;        
+            gameUI.onWaveEndAnimationFinished += OnWaveEndAnimationFinished;
+            time.CountdownFinished += OnCountdownFinished;
 
-            currentWave = waveData.waves[0];
-
-            state = State.StartingWave;
+            // start the game
+            CallNewWaveTitles();
         }
+
+
 
         /// <summary>
         /// If the game is in starting wave mode, start a new wave.
         /// If the game is in lose or win mode, allow keyboard exit to main titles.
+        /// TODO: remove this logic... put it into a controller class
         /// </summary>
         void Update()
         {
-            if (state == State.StartingWave) {
-                gameUI.TriggerStartNewWave();
-                state = State.WaitingForWaveStartFinish;
-
-            } else if (state == State.LostGame || state == State.WonGame) {
+             if (state == State.LostGame || state == State.WonGame) {
                 if (Input.anyKey) {
                     SceneManager.LoadScene("MainMenu");
                 }
             }
         }
 
+
+
+        // Event Handlers
+        //
+
         /// <summary>
-        /// When the countdown is finished, trigger a game over.
+        /// When the wave start animation is finished, initialize the current wave.
+        /// </summary>
+        void OnWaveStartAnimationFinished()
+        {
+            InitWave();
+        }
+        
+        /// <summary>
+        /// When the countdown is finished, lose the game.
         /// </summary>
         void OnCountdownFinished()
         {
-            time.PauseCountdown();
-            gameUI.TriggerGameOver();
-            state = State.LostGame;
+            LoseGame();
         }
 
         /// <summary>
-        /// When the wave start animation is finished, initiate the wave, and put 
-        /// wave manager into PlayingGame mode.
+        /// When the wave end animation is finished, call the new wave titles.
         /// </summary>
-        void OnWaveStartFinished()
+        void OnWaveEndAnimationFinished()
         {
-            gameUI.TriggerStartGame();
-
-            for (int i = 0; i < currentWave.saucers; ++i) {
-                IEnemy enemy = enemies.CreateSaucer();
-                Location spawnPoint = planet.GetRandomSpawnPoint();
-
-                enemy.MoveToLocation(spawnPoint);
-                enemy.destroyed += OnEnemyDestroyed;
-
-                enemyList.Add(enemy);
-            }
-
-            time.SetCountdown(currentWave.time);
-            time.StartCountdown();
-
-            state = State.PlayingGame;
+            CallNewWaveTitles();
         }
 
         /// <summary>
-        /// When the wave end animation is finished, setup the next wave, and put
-        /// the wave manager into StaringWave mode.
-        /// </summary>
-        void OnWaveEndFinished()
-        {
-            state = State.StartingWave;
-        }
-
-        /// <summary>
-        /// When enemy dies, remove it from the enemy list. If that list is empty, then
-        /// the wave is over. If this was the last wave, then the game was won.
+        /// When enemy dies, remove it from the enemy list. If that was the last enemy finish the wave.
         /// </summary>
         /// <param name="enemy">The enemy that was destroyed</param>
         void OnEnemyDestroyed(IEnemy enemy)
         {
             enemyList.Remove(enemy);
 
-            if (enemyList.Count == 0) {
-
-                currentWaveIndex++;
-
-                time.PauseCountdown();
-
-                if (currentWaveIndex >= waveData.waves.Length) {
-                    gameUI.TriggerGameWin();
-                    state = State.WonGame;
-
-                } else {
-                    time.AddSeconds(bonusTimeAfterWave);
-                    currentWave = waveData.waves[currentWaveIndex];
-                    gameUI.TriggerShowWaveVictory();
-                    state = State.WaitingForWaveEndFinish;
-                }
+            if (IsLastEnemy()) {
+                FinishWave();
             }
         }
 
+
+        //  Private Methods
+        //
+
+        /// <summary>
+        /// Call the new wave titles. These show information about the current wave.
+        /// </summary>
+        private void CallNewWaveTitles()
+        {
+            gameUI.TriggerStartNewWave();
+        }
+
+        /// <summary>
+        /// Initialize the current wave. Spawn enemies and restart the countdown.
+        /// </summary>
+        private void InitWave()
+        {
+            gameUI.TriggerStartGame();
+
+            for (int i = 0; i < currentWave.saucers; ++i) {
+
+                IEnemy enemy = enemies.CreateSaucer();
+
+                Location spawnPoint = planet.GetRandomSpawnPoint();
+
+                enemy.MoveToLocation(spawnPoint);
+
+                enemy.destroyed += OnEnemyDestroyed;
+
+                enemyList.Add(enemy);
+            }
+
+            time.SetCountdown(currentWave.time);
+
+            time.StartCountdown();
+        }
+
+        /// <summary>
+        /// Finish the current wave and prepare to init the next one. If this was 
+        /// the last wave, win the game.
+        /// </summary>
+        private void FinishWave()
+        {
+            if (IsLastWave()) {
+                WinGame();
+
+            } else {
+                time.PauseCountdown();
+
+                time.AddSeconds(bonusTimeAfterWave);
+
+                currentWaveIndex++;
+
+                currentWave = waveData.waves[currentWaveIndex];
+
+                gameUI.TriggerShowWaveVictory();
+            }
+        }
+        
+        /// <summary>
+        /// Win the game.
+        /// </summary>
+        private void WinGame()
+        {
+            gameUI.TriggerGameWin();
+            state = State.WonGame;
+        }
+
+        /// <summary>
+        /// Lose the game.
+        /// </summary>
+        private void LoseGame()
+        {
+            gameUI.TriggerGameOver();
+            state = State.LostGame;
+        }
+
+        /// <summary>
+        /// Return true if the round is over.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsLastEnemy()
+        {
+            return enemyList.Count == 0;
+        }
+
+        /// <summary>
+        /// Return true is game is won.
+        /// </summary>
+        /// <returns></returns>
+        private bool IsLastWave()
+        {
+            return currentWaveIndex == waveData.waves.Length - 1;
+        }
     }
 }

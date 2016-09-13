@@ -42,11 +42,11 @@ namespace SpaceGame.Interfaces
         /// <summary>
         /// Fires when the wave start animation finishes
         /// </summary>
-        event AnimationFinishedEvent waveStartAnimationFinished;
+        event AnimationFinishedEvent onWaveStartAnimationFinished;
 
         /// <summary>
         /// Fires when the wave end animation finishes
         /// </summary>
-        event AnimationFinishedEvent waveEndAnimationFinished;
+        event AnimationFinishedEvent onWaveEndAnimationFinished;
     }
 }

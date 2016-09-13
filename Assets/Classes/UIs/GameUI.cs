@@ -69,8 +69,8 @@ namespace SpaceGame.Actors
         /// </summary>
         public void OnWaveStartAnimationFinished()
         {
-            if (waveStartAnimationFinished != null) {
-                waveStartAnimationFinished();
+            if (onWaveStartAnimationFinished != null) {
+                onWaveStartAnimationFinished();
             }
         }
 
@@ -79,8 +79,8 @@ namespace SpaceGame.Actors
         /// </summary>
         public void OnWaveEndAnimationFinished()
         {
-            if (waveEndAnimationFinished != null) {
-                waveEndAnimationFinished();
+            if (onWaveEndAnimationFinished != null) {
+                onWaveEndAnimationFinished();
             }
         }
 
@@ -89,9 +89,9 @@ namespace SpaceGame.Actors
         // IGameUI 
         //
 
-        public event AnimationFinishedEvent waveStartAnimationFinished;
+        public event AnimationFinishedEvent onWaveStartAnimationFinished;
 
-        public event AnimationFinishedEvent waveEndAnimationFinished;
+        public event AnimationFinishedEvent onWaveEndAnimationFinished;
 
         public void SetWaveText(string waveTitle)
         {
