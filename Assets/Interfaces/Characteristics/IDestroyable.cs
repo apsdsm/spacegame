@@ -7,7 +7,6 @@ namespace SpaceGame.Interfaces
     /// </summary>
     public interface IDestroyable
     {
-
         /// <summary>
         /// Damage the specified object.
         /// </summary>

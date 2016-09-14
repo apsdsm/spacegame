@@ -10,8 +10,15 @@ namespace SpaceGame.Interfaces
 {
     public interface IEnemy
     {
+        /// <summary>
+        /// Move the enemy to a new location.
+        /// </summary>
+        /// <param name="location">location to move to</param>
         void MoveToLocation(Location location);
 
+        /// <summary>
+        /// Should be called when enemy is destroyed.
+        /// </summary>
         event EnemyDestroyedEvent destroyed;
     }
 }

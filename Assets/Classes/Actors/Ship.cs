@@ -6,7 +6,7 @@ using System;
 namespace SpaceGame.Actors
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class Ship : MonoBehaviour, IControllable, IPhysical
+    public class Ship : MonoBehaviour, IShip
     {
 
         [Tooltip("basic speed of ship")]
@@ -33,6 +33,13 @@ namespace SpaceGame.Actors
 
         private Vector3 calculatedVelocity;
 
+        private Location currentLocation;
+
+
+
+        // Monobehaviour Events
+        //
+
         /// <summary>
         /// Set up components and subscribe to services.
         /// </summary>
@@ -43,14 +50,14 @@ namespace SpaceGame.Actors
             bullets = IOC.Resolve<IShootableFactory>();
             registry = IOC.Resolve<IRegistryService>();
 
-            // get components
+            // get and initialize components
             rigid = GetComponent<Rigidbody>();
             rigid.constraints = RigidbodyConstraints.FreezeRotation;
             rigid.useGravity = false;
 
             // register with services and controllers
             controller.Register(this);
-            registry.Register<Ship>("Ship", this);
+            registry.Register<IShip>("Ship", this);
             
         }
 
@@ -76,7 +83,10 @@ namespace SpaceGame.Actors
             Quaternion correctRotation = Quaternion.FromToRotation(currentUp, correctUp) * transform.rotation;
 
             // slerp towards the correct rotation
-            transform.rotation = Quaternion.Slerp(transform.rotation, correctRotation, 10 * Time.deltaTime);  
+            transform.rotation = Quaternion.Slerp(transform.rotation, correctRotation, 10 * Time.deltaTime);
+
+            // update location orientation
+            currentLocation.orientation = transform.up;
         }
 
         void FixedUpdate ()
@@ -92,10 +102,11 @@ namespace SpaceGame.Actors
 
             // move to new position
             rigid.MovePosition(heightNormalised);
-           
+
+            // update location position
+            currentLocation.position = transform.position;
         }
-
-
+        
         /// <summary>
         /// Deregister the ship from any services it is subscribed to.
         /// </summary>
@@ -105,6 +116,10 @@ namespace SpaceGame.Actors
             controller.Deregister(this);
         }
 
+
+
+        // IControllable
+        //
 
         /// <summary>
         /// Add forward/backwards thrust to ship.
@@ -134,43 +149,56 @@ namespace SpaceGame.Actors
             bullets.CreatePlayerBullet().Shoot(transform.position, transform.forward, planet.core);
         }
 
-        public void AddForce(Vector3 force)
+
+
+        // Accessors
+        //
+
+        /// <summary>
+        /// See IShip.
+        /// </summary>
+        public Location location
         {
-            throw new NotImplementedException();
-        }
-
-        public void MoveToLocation(Location location)
-        {
-            throw new NotImplementedException();
+            get {
+                return currentLocation;
+            }
         }
 
 
-        /// <summary>
-        /// Gets the ship's current velocity.
-        /// </summary>
-        public Vector3 velocity {
-            get { return calculatedVelocity; }
-        }
+        ////  Accessors... Used?
+        ////
 
-        /// <summary>
-        /// Gets the ship's current position.
-        /// </summary>
-        public Vector3 position {
-            get { return transform.position; }
-        }
+        ///// <summary>
+        ///// Gets the ship's current velocity.
+        ///// </summary>
+        //public Vector3 velocity
+        //{
+        //    get { return calculatedVelocity; }
+        //}
 
-        /// <summary>
-        /// Gets the forward angle.
-        /// </summary>
-        public Vector3 forward {
-            get { return transform.forward; }
-        }
+        ///// <summary>
+        ///// Gets the ship's current position.
+        ///// </summary>
+        //public Vector3 position
+        //{
+        //    get { return transform.position; }
+        //}
 
-        /// <summary>
-        /// Gets the right angle.
-        /// </summary>
-        public Vector3 right {
-            get { return transform.right; }
-        }
+        ///// <summary>
+        ///// Gets the forward angle.
+        ///// </summary>
+        //public Vector3 forward
+        //{
+        //    get { return transform.forward; }
+        //}
+
+        ///// <summary>
+        ///// Gets the right angle.
+        ///// </summary>
+        //public Vector3 right
+        //{
+        //    get { return transform.right; }
+        //}
+
     }
 }

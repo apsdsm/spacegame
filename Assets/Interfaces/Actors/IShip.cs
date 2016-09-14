@@ -2,10 +2,7 @@
 
 namespace SpaceGame.Interfaces
 {
-    /// <summary>
-    /// A Physics object can be affected by external physics forces like gravity.
-    /// </summary>
-    public interface IControllable
+    public interface IShip
     {
         /// <summary>
         /// Fire the forward or backward thrusters of the ship, causing it to 
@@ -13,23 +10,22 @@ namespace SpaceGame.Interfaces
         /// </summary>
         /// <param name="thrust">thrust to add</param>
         /// <returns></returns>
-        void AddLongitudinalThrust ( float thrust );
+        void AddLongitudinalThrust(float thrust);
 
         /// <summary>
         /// Fires the left or right thrusters of the ship, causing it to rotate.
         /// </summary>
         /// <param name="thrust">thrust to add</param>
-        void AddRotationalThrust ( float thrust );
+        void AddRotationalThrust(float thrust);
 
         /// <summary>
         /// Fires the ships weapons.
         /// </summary>
-        void Shoot ();
+        void Shoot();
 
         /// <summary>
-        /// Move to a location.
+        /// Return the ship's location
         /// </summary>
-        /// <param name="location">moves to this location</param>
-        void MoveToLocation(Location location);
+        Location location { get; }
     }
 }

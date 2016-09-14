@@ -30,8 +30,6 @@ namespace SpaceGame.Actors
 
             // remove self from the game
             Destroy(gameObject);
-
-            Debug.Log("add more time!");
         }
 
         public void MoveToLocation(Location location)

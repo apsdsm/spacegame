@@ -7,32 +7,15 @@ using System;
 /// </summary>
 public class PCShipController : MonoBehaviour, IShipController
 {
-    private IControllable ship;
+    private IShip ship;
 
-    /// <summary>
-    /// Deregister the currently controlled ship (if it matches the ship currently being controlled).
-    /// </summary>
-    /// <param name="ship"></param>
-    public void Deregister (IControllable ship)
-    {
-        if (this.ship == ship) {
-            this.ship = null;
-        }
-    }
-
-    /// <summary>
-    /// Registers the ship that should be controlled by this controller.
-    /// </summary>
-    /// <param name="ship"></param>
-    public void Register (IControllable ship)
-    {
-        this.ship = ship;
-    }
+    // Monobehaviour Events
+    //
 
     /// <summary>
     /// If there is a registered ship, will pass PC input (keyboard and gamepad).
     /// </summary>
-    void Update ()
+    void Update()
     {
         if (ship == null) {
             return;
@@ -48,5 +31,45 @@ public class PCShipController : MonoBehaviour, IShipController
         if (Input.GetButtonDown("Fire1")) {
             ship.Shoot();
         }
+    }
+
+
+    // IShipController
+    //
+
+    void Disconnect()
+    { }
+
+    void Connect()
+    { }
+
+    /// <summary>
+    /// Deregister the currently controlled ship (if it matches the ship currently being controlled).
+    /// </summary>
+    /// <param name="ship"></param>
+    public void Deregister (IShip ship)
+    {
+        if (this.ship == ship) {
+            this.ship = null;
+        }
+    }
+
+    /// <summary>
+    /// Registers the ship that should be controlled by this controller.
+    /// </summary>
+    /// <param name="ship"></param>
+    public void Register (IShip ship)
+    {
+        this.ship = ship;
+    }
+
+    void IShipController.Disconnect()
+    {
+        throw new NotImplementedException();
+    }
+
+    void IShipController.Connect()
+    {
+        throw new NotImplementedException();
     }
 }

@@ -47,23 +47,26 @@ namespace SpaceGame.Actors
 
         private State state = State.Normal;
 
+        // services
         private IRegistryService registry;
-
-        private ICollectableFactory collectables;
-
         private IScoreService score;
 
-        private Rigidbody rigid;
-
-        private Ship ship;
-
+        // factories
+        private ICollectableFactory collectables;
+                
+        // actors
+        private IShip ship;
         private IPlanet planet;
 
+        // move saucer around game space
+        private Rigidbody rigid;
+
+        // internal reference to destroy effect
         private ParticleSystem destroyEffectSystem;
 
 
 
-        // MonoBehaviour
+        // MonoBehaviour Events
         //
 
         void Awake()
@@ -79,7 +82,7 @@ namespace SpaceGame.Actors
 
         void Start()
         {
-            ship = registry.LookUp<Ship>("Ship");
+            ship = registry.LookUp<IShip>("Ship");
             planet = registry.LookUp<IPlanet>("Planet");
         }
 
@@ -109,14 +112,14 @@ namespace SpaceGame.Actors
             }
 
             // distance to player - calc the distance between two points on unit sphere, then multiply by the planet radius to get real distance
-            float distanceToPlayer = Mathf.Acos(Vector3.Dot(transform.position.normalized, ship.transform.position.normalized)) * planet.surface.radius;
+            float distanceToPlayer = Mathf.Acos(Vector3.Dot(transform.position.normalized, ship.location.position.normalized)) * planet.surface.radius;
 
             Vector3 newPosition = transform.position;
 
             if (distanceToPlayer > chaseDistance) {
 
                 // project vector to player onto the saucer's X Z plane, then move towards that direction
-                Vector3 vectorToPlayer = (ship.transform.position - transform.position).normalized;
+                Vector3 vectorToPlayer = (ship.location.position - transform.position).normalized;
                 Vector3 projectedToPlayer = Vector3.ProjectOnPlane(vectorToPlayer, transform.up);
 
                 newPosition = transform.position + projectedToPlayer.normalized * cruiseSpeed * Time.deltaTime;
@@ -131,7 +134,14 @@ namespace SpaceGame.Actors
 
 
 
-        // IDestroyable
+        // Public Events
+        //
+        
+        public event EnemyDestroyedEvent destroyed;
+
+
+
+        // Public Methods
         //
 
         public void Damage(Damage damage)
@@ -187,14 +197,7 @@ namespace SpaceGame.Actors
                 OnDestroyed();
             }
         }
-
-
-
-        // IEnemy
-        //
-
-        public event EnemyDestroyedEvent destroyed;
-
+        
         public void MoveToLocation(Location location)
         {
             transform.position = location.position;
@@ -203,7 +206,7 @@ namespace SpaceGame.Actors
 
 
 
-        // Private
+        // Private Methods
         //
 
         /// <summary>
