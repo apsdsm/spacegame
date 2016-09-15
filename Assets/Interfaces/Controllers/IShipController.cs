@@ -5,7 +5,10 @@ using System.Text;
 
 namespace SpaceGame.Interfaces
 {
-    interface IShipController
+    /// <summary>
+    /// A ShipController is responsible for sending input to a registered ship object.
+    /// </summary>
+    public interface IShipController
     {
         /// <summary>
         /// Stop sending input from this controller to registered objects.

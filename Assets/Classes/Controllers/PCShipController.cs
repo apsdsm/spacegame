@@ -1,75 +1,69 @@
 ﻿using UnityEngine;
 using SpaceGame.Interfaces;
-using System;
 
-/// <summary>
-/// Takes an IControllableShip object and passes it player input.
-/// </summary>
-public class PCShipController : MonoBehaviour, IShipController
-{
-    private IShip ship;
-
-    // Monobehaviour Events
-    //
+namespace SpaceGame.Controllers {
 
     /// <summary>
-    /// If there is a registered ship, will pass PC input (keyboard and gamepad).
+    /// Takes an IControllableShip object and passes it player input.
     /// </summary>
-    void Update()
-    {
-        if (ship == null) {
-            return;
+    public class PCShipController : MonoBehaviour, IShipController {
+        private bool connected;
+
+        private IShip ship;
+
+
+
+        // Monobehaviour
+        //
+
+        void Awake() {
+            connected = false;
         }
 
-        // do forward backwards movement
-        ship.AddLongitudinalThrust(Input.GetAxis("Vertical"));
+        /// <summary>
+        /// Check to see if the controller is doing anything, and if so pass that onto the ship.
+        /// Adds rotational movement, and fires weapons. Does nothing if there is no ship registered
+        /// or the controller is not connected.
+        /// </summary>
+        void Update() {
 
-        // do rotational movement
-        ship.AddRotationalThrust(Input.GetAxis("Horizontal"));
+            if (ship == null) {
+                return;
+            }
 
-        // fire weapons
-        if (Input.GetButtonDown("Fire1")) {
-            ship.Shoot();
+            if (!connected) {
+                return;
+            }
+
+            ship.AddRotationalThrust(Input.GetAxis("Horizontal"));
+
+            if (Input.GetButtonDown("Fire1")) {
+                ship.Shoot();
+            }
         }
-    }
 
 
-    // IShipController
-    //
+        // IShipController
+        //
 
-    void Disconnect()
-    { }
-
-    void Connect()
-    { }
-
-    /// <summary>
-    /// Deregister the currently controlled ship (if it matches the ship currently being controlled).
-    /// </summary>
-    /// <param name="ship"></param>
-    public void Deregister (IShip ship)
-    {
-        if (this.ship == ship) {
-            this.ship = null;
+        public void Disconnect() {
+            connected = false;
         }
-    }
 
-    /// <summary>
-    /// Registers the ship that should be controlled by this controller.
-    /// </summary>
-    /// <param name="ship"></param>
-    public void Register (IShip ship)
-    {
-        this.ship = ship;
-    }
+        public void Connect() {
+            connected = true;
+        }
 
-    void IShipController.Disconnect()
-    {
-        throw new NotImplementedException();
-    }
+        public void Deregister(IShip ship) {
+            if (this.ship == ship) {
+                this.ship = null;
+            }
+        }
 
-    void IShipController.Connect()
-    {
-        throw new NotImplementedException();
+        public void Register(IShip ship) {
+            if (this.ship == null) {
+                this.ship = ship;
+            }
+        }
     }
 }

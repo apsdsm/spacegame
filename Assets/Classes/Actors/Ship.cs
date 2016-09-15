@@ -3,11 +3,10 @@ using SpaceGame.Interfaces;
 using Fletch;
 using System;
 
-namespace SpaceGame.Actors
-{
+namespace SpaceGame.Actors {
+
     [RequireComponent(typeof(Rigidbody))]
-    public class Ship : MonoBehaviour, IShip
-    {
+    public class Ship : MonoBehaviour, IShip {
 
         [Tooltip("basic speed of ship")]
         public float cruiseSpeed = 20.0f;
@@ -24,7 +23,7 @@ namespace SpaceGame.Actors
         private IShipController controller;
 
         private IShootableFactory bullets;
-       
+
         private IRegistryService registry;
 
         private IPlanet planet;
@@ -37,14 +36,11 @@ namespace SpaceGame.Actors
 
 
 
-        // Monobehaviour Events
+        // Monobehaviour
         //
 
-        /// <summary>
-        /// Set up components and subscribe to services.
-        /// </summary>
-        void Awake ()
-        {
+        void Awake() {
+
             // get services
             controller = IOC.Resolve<IShipController>();
             bullets = IOC.Resolve<IShootableFactory>();
@@ -58,19 +54,15 @@ namespace SpaceGame.Actors
             // register with services and controllers
             controller.Register(this);
             registry.Register<IShip>("Ship", this);
-            
+
         }
 
-        /// <summary>
-        /// Load reference to objects that were set up during Awake.
-        /// </summary>
-        void Start ()
-        {
+        void Start() {
             planet = registry.LookUp<IPlanet>("Planet");
         }
 
-        void Update ()
-        {
+        void Update() {
+
             // debug rays - groovy
             Debug.DrawRay(transform.position, transform.up * 2.0f, Color.red);
             Debug.DrawRay(transform.position, transform.forward * 2.0f, Color.blue);
@@ -89,8 +81,8 @@ namespace SpaceGame.Actors
             currentLocation.orientation = transform.up;
         }
 
-        void FixedUpdate ()
-        {
+        void FixedUpdate() {
+
             // get a new forward position
             Vector3 newPosition = transform.position + (transform.forward * cruiseSpeed * Time.deltaTime);
 
@@ -106,99 +98,30 @@ namespace SpaceGame.Actors
             // update location position
             currentLocation.position = transform.position;
         }
-        
-        /// <summary>
-        /// Deregister the ship from any services it is subscribed to.
-        /// </summary>
-        public void OnDestroy ()
-        {
+
+        public void OnDestroy() {
             registry.Deregister<Ship>("Ship");
             controller.Deregister(this);
         }
 
 
 
-        // IControllable
+        // IShip
         //
 
-        /// <summary>
-        /// Add forward/backwards thrust to ship.
-        /// </summary>
-        /// <param name="thrust">amount of thrust to add</param>
-        public void AddLongitudinalThrust (float thrust)
-        {
+        public Location location { get { return currentLocation; } }
+
+        public void AddLongitudinalThrust(float thrust) {
             rigid.AddForce(transform.forward * thrust * acceleration);
         }
-
-
-        /// <summary>
-        /// Add left/right rotational thrust to ship.
-        /// </summary>
-        /// <param name="thrust">amount of thrust to add</param>
-        public void AddRotationalThrust (float thrust)
-        {
+                
+        public void AddRotationalThrust(float thrust) {
             transform.RotateAround(transform.position, transform.up, (thrust * rotation) * Time.deltaTime);
         }
 
-
-        /// <summary>
-        /// Fire a projectile from the ship, in the direction the ship is facing.
-        /// </summary>
-        public void Shoot ()
-        {
+        public void Shoot() {
             bullets.CreatePlayerBullet().Shoot(transform.position, transform.forward, planet.core);
         }
-
-
-
-        // Accessors
-        //
-
-        /// <summary>
-        /// See IShip.
-        /// </summary>
-        public Location location
-        {
-            get {
-                return currentLocation;
-            }
-        }
-
-
-        ////  Accessors... Used?
-        ////
-
-        ///// <summary>
-        ///// Gets the ship's current velocity.
-        ///// </summary>
-        //public Vector3 velocity
-        //{
-        //    get { return calculatedVelocity; }
-        //}
-
-        ///// <summary>
-        ///// Gets the ship's current position.
-        ///// </summary>
-        //public Vector3 position
-        //{
-        //    get { return transform.position; }
-        //}
-
-        ///// <summary>
-        ///// Gets the forward angle.
-        ///// </summary>
-        //public Vector3 forward
-        //{
-        //    get { return transform.forward; }
-        //}
-
-        ///// <summary>
-        ///// Gets the right angle.
-        ///// </summary>
-        //public Vector3 right
-        //{
-        //    get { return transform.right; }
-        //}
 
     }
 }

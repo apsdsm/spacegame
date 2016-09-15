@@ -10,13 +10,10 @@ using System.Collections.Generic;
 using Fletch;
 
 
-namespace SpaceGame.Actors
-{
-    public class WaveManager : MonoBehaviour
-    {
+namespace SpaceGame.Actors {
+    public class WaveManager : MonoBehaviour {
         // states for the wave manager
-        public enum State
-        {
+        public enum State {
             PlayingGame,
             LostGame,
             WonGame
@@ -36,15 +33,19 @@ namespace SpaceGame.Actors
 
         [Tooltip("how much time to grant as bonus after wave ends")]
         public int bonusTimeAfterWave = 10;
-        
+
         // Factories
         private IEnemyFactory enemies;
 
         // Services
-        private ITimeService time;      
+        private ITimeService time;
         private IRegistryService registry;
 
-        // Actors
+        // Controllers
+        private IShipController shipController;
+        private IEndGameController endGameController;
+
+        // Actors 
         private IPlanet planet;
 
         // UIs
@@ -62,11 +63,16 @@ namespace SpaceGame.Actors
         // index of current wave in wavedata array
         private int currentWaveIndex = 0;
 
+
+
+        // Monobehaviour
+        //
+
         /// <summary>
         /// Set up internal data objects. Resolve references to services.
         /// </summary>
-        void Awake()
-        {
+        void Awake() {
+
             // initialize wave info
             currentWaveIndex = 0;
 
@@ -80,41 +86,26 @@ namespace SpaceGame.Actors
             enemies = IOC.Resolve<IEnemyFactory>();
             time = IOC.Resolve<ITimeService>();
             registry = IOC.Resolve<IRegistryService>();
+            shipController = IOC.Resolve<IShipController>();
+            endGameController = IOC.Resolve<IEndGameController>();
         }
 
         /// <summary>
         /// resolve references to non-service entities.
         /// subscribe to events.
         /// </summary>
-        void Start()
-        {
+        void Start() {
+
             // get registry lookups
             planet = registry.LookUp<IPlanet>("Planet");
             gameUI = registry.LookUp<IGameUI>("GameUI");
 
             // subscribe to events
-            gameUI.onWaveStartAnimationFinished += OnWaveStartAnimationFinished;        
+            gameUI.onWaveStartAnimationFinished += OnWaveStartAnimationFinished;
             gameUI.onWaveEndAnimationFinished += OnWaveEndAnimationFinished;
             time.CountdownFinished += OnCountdownFinished;
 
-            // start the game
             CallNewWaveTitles();
-        }
-
-
-
-        /// <summary>
-        /// If the game is in starting wave mode, start a new wave.
-        /// If the game is in lose or win mode, allow keyboard exit to main titles.
-        /// TODO: remove this logic... put it into a controller class
-        /// </summary>
-        void Update()
-        {
-             if (state == State.LostGame || state == State.WonGame) {
-                if (Input.anyKey) {
-                    SceneManager.LoadScene("MainMenu");
-                }
-            }
         }
 
 
@@ -125,24 +116,21 @@ namespace SpaceGame.Actors
         /// <summary>
         /// When the wave start animation is finished, initialize the current wave.
         /// </summary>
-        void OnWaveStartAnimationFinished()
-        {
+        void OnWaveStartAnimationFinished() {
             InitWave();
         }
-        
+
         /// <summary>
         /// When the countdown is finished, lose the game.
         /// </summary>
-        void OnCountdownFinished()
-        {
+        void OnCountdownFinished() {
             LoseGame();
         }
 
         /// <summary>
         /// When the wave end animation is finished, call the new wave titles.
         /// </summary>
-        void OnWaveEndAnimationFinished()
-        {
+        void OnWaveEndAnimationFinished() {
             CallNewWaveTitles();
         }
 
@@ -150,8 +138,7 @@ namespace SpaceGame.Actors
         /// When enemy dies, remove it from the enemy list. If that was the last enemy finish the wave.
         /// </summary>
         /// <param name="enemy">The enemy that was destroyed</param>
-        void OnEnemyDestroyed(IEnemy enemy)
-        {
+        void OnEnemyDestroyed(IEnemy enemy) {
             enemyList.Remove(enemy);
 
             if (IsLastEnemy()) {
@@ -160,22 +147,21 @@ namespace SpaceGame.Actors
         }
 
 
+
         //  Private Methods
         //
 
         /// <summary>
         /// Call the new wave titles. These show information about the current wave.
         /// </summary>
-        private void CallNewWaveTitles()
-        {
+        private void CallNewWaveTitles() {
             gameUI.TriggerStartNewWave();
         }
 
         /// <summary>
         /// Initialize the current wave. Spawn enemies and restart the countdown.
         /// </summary>
-        private void InitWave()
-        {
+        private void InitWave() {
             gameUI.TriggerStartGame();
 
             for (int i = 0; i < currentWave.saucers; ++i) {
@@ -194,14 +180,15 @@ namespace SpaceGame.Actors
             time.SetCountdown(currentWave.time);
 
             time.StartCountdown();
+
+            shipController.Connect();
         }
 
         /// <summary>
         /// Finish the current wave and prepare to init the next one. If this was 
         /// the last wave, win the game.
         /// </summary>
-        private void FinishWave()
-        {
+        private void FinishWave() {
             if (IsLastWave()) {
                 WinGame();
 
@@ -217,31 +204,34 @@ namespace SpaceGame.Actors
                 gameUI.TriggerShowWaveVictory();
             }
         }
-        
+
         /// <summary>
-        /// Win the game.
+        /// Win the game. Turn over control to the endGameController.
         /// </summary>
-        private void WinGame()
-        {
+        private void WinGame() {
+            shipController.Disconnect();
+
+            endGameController.Connect();
+
             gameUI.TriggerGameWin();
-            state = State.WonGame;
         }
 
         /// <summary>
-        /// Lose the game.
+        /// Lose the game. Turn over control to the endGameController.
         /// </summary>
-        private void LoseGame()
-        {
+        private void LoseGame() {
+            shipController.Disconnect();
+
+            endGameController.Connect();
+
             gameUI.TriggerGameOver();
-            state = State.LostGame;
         }
 
         /// <summary>
         /// Return true if the round is over.
         /// </summary>
         /// <returns></returns>
-        private bool IsLastEnemy()
-        {
+        private bool IsLastEnemy() {
             return enemyList.Count == 0;
         }
 
@@ -249,8 +239,7 @@ namespace SpaceGame.Actors
         /// Return true is game is won.
         /// </summary>
         /// <returns></returns>
-        private bool IsLastWave()
-        {
+        private bool IsLastWave() {
             return currentWaveIndex == waveData.waves.Length - 1;
         }
     }
