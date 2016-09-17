@@ -25,15 +25,15 @@ namespace SpaceGame.Interfaces
         void TriggerWaveEndAnimation();
 
         /// <summary>
-        /// switch the game over trigger.
-        /// </summary>
-        void TriggerGameOver();
-
-        /// <summary>
         /// switch the game win trigger.
         /// </summary>
         void TriggerGameWin();
 
+        /// <summary>
+        /// switch the game over trigger.
+        /// </summary>
+        void TriggerGameOver();
+        
         /// <summary>
         /// Fires when the UI finishes showing wave information and is ready to start game actions.
         /// </summary>

@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using UnityEngine.UI;
-using Fletch;
+﻿using UnityEngine;
 using SpaceGame.Interfaces;
-using SpaceGame.UI;
-using SpaceGame.Events;
 
-namespace SpaceGame.UI.Behaviours {
-    public class EnterGameStateBehaviour : StateMachineBehaviour {
+namespace SpaceGame.UI.Game {
+    public class GameReadyBehaviour : StateMachineBehaviour {
 
         // will call this gameUI
         public IGameUI gameUI;

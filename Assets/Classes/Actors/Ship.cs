@@ -111,6 +111,12 @@ namespace SpaceGame.Actors {
 
         public Location location { get { return currentLocation; } }
 
+        public Vector3 velocity {  get { return transform.forward; } }
+
+        public Vector3 right { get { return transform.right; } }
+
+        public Vector3 forward { get { return transform.forward; } }
+
         public void AddLongitudinalThrust(float thrust) {
             rigid.AddForce(transform.forward * thrust * acceleration);
         }

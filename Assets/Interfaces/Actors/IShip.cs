@@ -27,5 +27,9 @@ namespace SpaceGame.Interfaces
         /// Return the ship's location
         /// </summary>
         Location location { get; }
+
+        
+
+        Transform transform { get; }
     }
 }

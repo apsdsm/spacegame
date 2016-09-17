@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using SpaceGame.Interfaces;
-using SpaceGame.Behaviours;
-using System;
 
 namespace SpaceGame.Factories
 {

@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
 using SpaceGame.Interfaces;
-using SpaceGame.Behaviours;
-using System;
-using Fletch;
 
 namespace SpaceGame.Actors
 {

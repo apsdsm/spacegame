@@ -5,13 +5,12 @@ using UnityEngine.UI;
 // game
 using SpaceGame.Interfaces;
 using SpaceGame.Events;
-using SpaceGame.UI.Behaviours;
 
 // vendor
 using Fletch;
 using System;
 
-namespace SpaceGame.UI
+namespace SpaceGame.UI.Game
 {
     /// <summary>
     /// Provides the UI for the main game.
@@ -35,7 +34,7 @@ namespace SpaceGame.UI
         private Animator animator;
 
         // behaviours
-        private EnterGameStateBehaviour gameReadyBehaviour;
+        private GameReadyBehaviour gameReadyBehaviour;
 
 
 
@@ -60,7 +59,7 @@ namespace SpaceGame.UI
             animator = GetComponent<Animator>();
             
             // game ready behaviour
-            gameReadyBehaviour = animator.GetBehaviour<EnterGameStateBehaviour>();
+            gameReadyBehaviour = animator.GetBehaviour<GameReadyBehaviour>();
             gameReadyBehaviour.gameUI = this;
         }
 
