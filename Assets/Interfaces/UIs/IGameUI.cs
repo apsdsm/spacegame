@@ -15,19 +15,14 @@ namespace SpaceGame.Interfaces
         void SetWaveText(string waveTitle);
 
         /// <summary>
-        /// switch the new wave trigger.
+        /// switch the wave start trigger.
         /// </summary>
-        void TriggerStartNewWave();
+        void TriggerWaveStartAnimation();
 
         /// <summary>
-        /// switch the start game trigger.
+        /// switch the wave victory trigger.
         /// </summary>
-        void TriggerStartGame();
-
-        /// <summary>
-        /// switch the show wave victory trigger.
-        /// </summary>
-        void TriggerShowWaveVictory();
+        void TriggerWaveEndAnimation();
 
         /// <summary>
         /// switch the game over trigger.
@@ -38,15 +33,15 @@ namespace SpaceGame.Interfaces
         /// switch the game win trigger.
         /// </summary>
         void TriggerGameWin();
-        
-        /// <summary>
-        /// Fires when the wave start animation finishes
-        /// </summary>
-        event AnimationFinishedEvent onWaveStartAnimationFinished;
 
         /// <summary>
-        /// Fires when the wave end animation finishes
+        /// Fires when the UI finishes showing wave information and is ready to start game actions.
         /// </summary>
-        event AnimationFinishedEvent onWaveEndAnimationFinished;
+        event EnterStateEvent onGameReady;
+
+        /// <summary>
+        /// Call the on game ready event. 
+        /// </summary>
+        void CallOnGameReady();
     }
 }

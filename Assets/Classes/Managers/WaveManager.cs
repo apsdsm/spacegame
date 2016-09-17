@@ -12,24 +12,9 @@ using Fletch;
 
 namespace SpaceGame.Actors {
     public class WaveManager : MonoBehaviour {
-        // states for the wave manager
-        public enum State {
-            PlayingGame,
-            LostGame,
-            WonGame
-        }
-
-        [Tooltip("the number of enemies that will be in the current wave")]
-        public int enemiesInWave = 0;
 
         [Tooltip("data about the waves in the game")]
         public WaveData waveData;
-
-        [Tooltip("how long to show wave title")]
-        public float showWaveTitleTime = 1.0f;
-
-        [Tooltip("how long to show wave end title")]
-        public float showWaveEndTime = 1.0f;
 
         [Tooltip("how much time to grant as bonus after wave ends")]
         public int bonusTimeAfterWave = 10;
@@ -53,9 +38,6 @@ namespace SpaceGame.Actors {
 
         // list of enemies that currently exist in the game
         private List<IEnemy> enemyList;
-
-        // wave manager current state
-        private State state = State.PlayingGame;
 
         // reference to current wave
         private WaveData.Wave currentWave;
@@ -97,15 +79,27 @@ namespace SpaceGame.Actors {
         void Start() {
 
             // get registry lookups
+
             planet = registry.LookUp<IPlanet>("Planet");
+
             gameUI = registry.LookUp<IGameUI>("GameUI");
 
             // subscribe to events
-            gameUI.onWaveStartAnimationFinished += OnWaveStartAnimationFinished;
-            gameUI.onWaveEndAnimationFinished += OnWaveEndAnimationFinished;
+
             time.CountdownFinished += OnCountdownFinished;
 
-            CallNewWaveTitles();
+            gameUI.onGameReady += OnGameReady;
+
+            // turn on controls
+
+            shipController.Connect();
+
+            // set up the first wave titles
+            // ...
+
+            // start the first wave
+
+            gameUI.TriggerWaveStartAnimation();
         }
 
 
@@ -113,11 +107,8 @@ namespace SpaceGame.Actors {
         // Event Handlers
         //
 
-        /// <summary>
-        /// When the wave start animation is finished, initialize the current wave.
-        /// </summary>
-        void OnWaveStartAnimationFinished() {
-            InitWave();
+        void OnGameReady() {
+            StartWave();
         }
 
         /// <summary>
@@ -125,13 +116,6 @@ namespace SpaceGame.Actors {
         /// </summary>
         void OnCountdownFinished() {
             LoseGame();
-        }
-
-        /// <summary>
-        /// When the wave end animation is finished, call the new wave titles.
-        /// </summary>
-        void OnWaveEndAnimationFinished() {
-            CallNewWaveTitles();
         }
 
         /// <summary>
@@ -151,18 +135,11 @@ namespace SpaceGame.Actors {
         //  Private Methods
         //
 
-        /// <summary>
-        /// Call the new wave titles. These show information about the current wave.
-        /// </summary>
-        private void CallNewWaveTitles() {
-            gameUI.TriggerStartNewWave();
-        }
 
         /// <summary>
         /// Initialize the current wave. Spawn enemies and restart the countdown.
         /// </summary>
-        private void InitWave() {
-            gameUI.TriggerStartGame();
+        private void StartWave() {
 
             for (int i = 0; i < currentWave.saucers; ++i) {
 
@@ -180,8 +157,6 @@ namespace SpaceGame.Actors {
             time.SetCountdown(currentWave.time);
 
             time.StartCountdown();
-
-            shipController.Connect();
         }
 
         /// <summary>
@@ -201,7 +176,7 @@ namespace SpaceGame.Actors {
 
                 currentWave = waveData.waves[currentWaveIndex];
 
-                gameUI.TriggerShowWaveVictory();
+                gameUI.TriggerWaveEndAnimation();
             }
         }
 
@@ -228,7 +203,7 @@ namespace SpaceGame.Actors {
         }
 
         /// <summary>
-        /// Return true if the round is over.
+        /// Return true if there are no more enemies.
         /// </summary>
         /// <returns></returns>
         private bool IsLastEnemy() {
@@ -236,7 +211,7 @@ namespace SpaceGame.Actors {
         }
 
         /// <summary>
-        /// Return true is game is won.
+        /// Return true if there are no more waves.
         /// </summary>
         /// <returns></returns>
         private bool IsLastWave() {

@@ -5,12 +5,13 @@ using UnityEngine.UI;
 // game
 using SpaceGame.Interfaces;
 using SpaceGame.Events;
+using SpaceGame.UI.Behaviours;
 
 // vendor
 using Fletch;
 using System;
 
-namespace SpaceGame.Actors
+namespace SpaceGame.UI
 {
     /// <summary>
     /// Provides the UI for the main game.
@@ -25,18 +26,17 @@ namespace SpaceGame.Actors
         [Tooltip("The time text element")]
         public Text timeText;
 
-        // reference to score service
+        // services
         private IScoreService score;
-
-        // reference to time service
         private ITimeService time;
-
-        // reference to the registry
         private IRegistryService registry;
 
-        // reference to animator component
+        // components
         private Animator animator;
-        
+
+        // behaviours
+        private EnterGameStateBehaviour gameReadyBehaviour;
+
 
 
         // MonoBehaviour
@@ -44,73 +44,36 @@ namespace SpaceGame.Actors
 
         void Awake()
         {
+            // time service
             time = IOC.Resolve<ITimeService>();
-
             time.TimeUpdated += UpdateTimeText;
 
+            // score service
             score = IOC.Resolve<IScoreService>();
-
             score.ScoreUpdated += UpdateScoreText;
 
+            // registry service
             registry = IOC.Resolve<IRegistryService>();
-
             registry.Register<IGameUI>("GameUI", this);
 
+            // animator component
             animator = GetComponent<Animator>();
+            
+            // game ready behaviour
+            gameReadyBehaviour = animator.GetBehaviour<EnterGameStateBehaviour>();
+            gameReadyBehaviour.gameUI = this;
         }
 
 
-
-        // Animator Events
-        //
-
-        /// <summary>
-        /// Fire the waveStartAnimationFinished event if there are any subscribers.
-        /// </summary>
-        public void OnWaveStartAnimationFinished()
-        {
-            if (onWaveStartAnimationFinished != null) {
-                onWaveStartAnimationFinished();
-            }
-        }
-
-        /// <summary>
-        /// Fires the waveEndAnimationFinished event if there are any subscribers.
-        /// </summary>
-        public void OnWaveEndAnimationFinished()
-        {
-            if (onWaveEndAnimationFinished != null) {
-                onWaveEndAnimationFinished();
-            }
-        }
-
-        
 
         // IGameUI 
         //
 
-        public event AnimationFinishedEvent onWaveStartAnimationFinished;
-
-        public event AnimationFinishedEvent onWaveEndAnimationFinished;
-
+        public event EnterStateEvent onGameReady;
+    
         public void SetWaveText(string waveTitle)
         {
             throw new NotImplementedException();
-        }
-
-        public void TriggerGameOver()
-        {
-            animator.SetTrigger("ShowGameOver");
-        }
-
-        public void TriggerGameWin()
-        {
-            animator.SetTrigger("ShowGameWin");
-        }
-
-        public void TriggerShowWaveVictory()
-        {
-            animator.SetTrigger("ShowWaveVictory");
         }
 
         public void TriggerStartGame()
@@ -118,11 +81,32 @@ namespace SpaceGame.Actors
             animator.SetTrigger("StartGame");
         }
 
-        public void TriggerStartNewWave()
+        public void TriggerGameWin()
+        {
+            animator.SetTrigger("ShowGameWin");
+        }
+        
+        public void TriggerGameOver()
+        {
+            animator.SetTrigger("ShowGameOver");
+        }
+
+        public void TriggerWaveStartAnimation()
         {
             animator.SetTrigger("StartNewWave");
         }
-      
+
+        public void TriggerWaveEndAnimation()
+        {
+            animator.SetTrigger("ShowWaveEnd");
+        }
+
+        public void CallOnGameReady() {
+            if (onGameReady != null) {
+                onGameReady();
+            }
+        }
+
 
 
         // Private

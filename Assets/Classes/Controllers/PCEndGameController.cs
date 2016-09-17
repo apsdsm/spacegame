@@ -10,7 +10,7 @@ namespace SpaceGame.Controllers {
     class PCEndGameController : MonoBehaviour, IEndGameController {
 
         private bool connected;
-
+        
 
 
         // MonoBehaviour
