@@ -67,9 +67,9 @@ namespace SpaceGame.Actors
         State state = State.Normal;
 
         // variables to cut back on memory allocation
-        Vector3 currentVectorToPlayer;
-        Vector3 currentProjectedToPlayer;
-        float currentDistanceToPlayer;
+        Vector3 vectorToPlayer;
+        Vector3 projectedToPlayer;
+        float distanceToPlayer;
 
 
 
@@ -122,22 +122,22 @@ namespace SpaceGame.Actors
             }
 
             // distance to player - calc the distance between two points on unit sphere, then multiply by the planet radius to get real distance
-            currentDistanceToPlayer = Mathf.Acos(Vector3.Dot(transform.position.normalized, ship.location.position.normalized)) * planet.surface.radius;
+            distanceToPlayer = Mathf.Acos(Vector3.Dot(transform.position.normalized, ship.location.position.normalized)) * planet.surface.radius;
 
             // deafult starting position is current position
             Vector3 targetPosition = transform.position;
 
             // if player further out than chase distance, update target position
-            if (currentDistanceToPlayer > chaseDistance) {
+            if (distanceToPlayer > chaseDistance) {
 
                 // a vector directly to the player.
-                currentVectorToPlayer = (ship.location.position - transform.position).normalized;
+                vectorToPlayer = (ship.location.position - transform.position).normalized;
 
                 // the vector projected onto the saucer's XZ plane
-                currentProjectedToPlayer = Vector3.ProjectOnPlane(currentVectorToPlayer, transform.up).normalized;
+                projectedToPlayer = Vector3.ProjectOnPlane(vectorToPlayer, transform.up).normalized;
 
                 // calculate movement in projected direction
-                targetPosition = transform.position + currentProjectedToPlayer * cruiseSpeed * Time.deltaTime;
+                targetPosition = transform.position + projectedToPlayer * cruiseSpeed * Time.deltaTime;
 
                 // normalize height
                 targetPosition = (targetPosition - planet.core).normalized * planet.surface.radius;

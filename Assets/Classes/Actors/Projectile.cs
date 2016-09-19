@@ -92,8 +92,6 @@ namespace SpaceGame.Actors
             if (destroyable != null) {
                 destroyable.Damage(new Damage(){ direction = transform.forward, ammount = damage, shootable = this });
             }
-
-            Debug.Log("Projectile should stop now");
         }
 
     }

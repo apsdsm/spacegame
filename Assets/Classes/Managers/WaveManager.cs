@@ -73,8 +73,8 @@ namespace SpaceGame.Actors {
         }
 
         /// <summary>
-        /// resolve references to non-service entities.
-        /// subscribe to events.
+        /// Resolve references to non-service entities.
+        /// Subscribe to events.
         /// </summary>
         void Start() {
 
@@ -94,9 +94,6 @@ namespace SpaceGame.Actors {
 
             shipController.Connect();
 
-            // set up the first wave titles
-            // ...
-
             // start the first wave
 
             gameUI.TriggerWaveStartAnimation();
@@ -107,6 +104,9 @@ namespace SpaceGame.Actors {
         // Event Handlers
         //
 
+        /// <summary>
+        /// When the game state is ready, start the current wave.
+        /// </summary>
         void OnGameReady() {
             StartWave();
         }
@@ -160,8 +160,7 @@ namespace SpaceGame.Actors {
         }
 
         /// <summary>
-        /// Finish the current wave and prepare to init the next one. If this was 
-        /// the last wave, win the game.
+        /// Finish the current wave and prepare to init the next one. If this was the last wave, win the game.
         /// </summary>
         private void FinishWave() {
             if (IsLastWave()) {
