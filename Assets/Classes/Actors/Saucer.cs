@@ -45,28 +45,33 @@ namespace SpaceGame.Actors
         [Tooltip("Speed at which object falls to earth after being destroyed")]
         public float dropSpeed = 4.0f;
 
-        private State state = State.Normal;
 
         // services
-        private IRegistryService registry;
-        private IScoreService score;
+        IRegistryService registry;
+        IScoreService score;
 
         // factories
-        private ICollectableFactory collectables;
+        ICollectableFactory collectables;
                 
         // actors
-        private IShip ship;
-        private IPlanet planet;
+        IShip ship;
+        IPlanet planet;
 
         // move saucer around game space
-        private Rigidbody rigid;
+        Rigidbody rigid;
 
         // internal reference to destroy effect
-        private ParticleSystem destroyEffectSystem;
+        ParticleSystem destroyEffectSystem;
 
-        public Vector3 currentVectorToPlayer;
-        public Vector3 currentProjectedToPlayer;
-        private float currentDistanceToPlayer;
+        // current enemy state
+        State state = State.Normal;
+
+        // variables to cut back on memory allocation
+        Vector3 currentVectorToPlayer;
+        Vector3 currentProjectedToPlayer;
+        float currentDistanceToPlayer;
+
+
 
         //////////////////////////////////////////////////////////////////////////////////
         // Monobehaviour Events
