@@ -64,15 +64,20 @@ namespace SpaceGame.Actors
         // internal reference to destroy effect
         private ParticleSystem destroyEffectSystem;
 
+        public Vector3 currentVectorToPlayer;
+        public Vector3 currentProjectedToPlayer;
+        private float currentDistanceToPlayer;
 
-
-        // MonoBehaviour Events
+        //////////////////////////////////////////////////////////////////////////////////
+        // Monobehaviour Events
         //
 
         void Awake()
         {
             registry = IOC.Resolve<IRegistryService>();
+
             collectables = IOC.Resolve<ICollectableFactory>();
+
             score = IOC.Resolve<IScoreService>();
 
             rigid = GetComponent<Rigidbody>();
@@ -83,6 +88,7 @@ namespace SpaceGame.Actors
         void Start()
         {
             ship = registry.LookUp<IShip>("Ship");
+
             planet = registry.LookUp<IPlanet>("Planet");
         }
 
@@ -104,7 +110,6 @@ namespace SpaceGame.Actors
             if (state == State.Destructing) {
                 OnDestructing();
                 return;
-
             }
 
             if (ship == null) {
@@ -112,38 +117,52 @@ namespace SpaceGame.Actors
             }
 
             // distance to player - calc the distance between two points on unit sphere, then multiply by the planet radius to get real distance
-            float distanceToPlayer = Mathf.Acos(Vector3.Dot(transform.position.normalized, ship.location.position.normalized)) * planet.surface.radius;
+            currentDistanceToPlayer = Mathf.Acos(Vector3.Dot(transform.position.normalized, ship.location.position.normalized)) * planet.surface.radius;
 
-            Vector3 newPosition = transform.position;
+            // deafult starting position is current position
+            Vector3 targetPosition = transform.position;
 
-            if (distanceToPlayer > chaseDistance) {
+            // if player further out than chase distance, update target position
+            if (currentDistanceToPlayer > chaseDistance) {
 
-                // project vector to player onto the saucer's X Z plane, then move towards that direction
-                Vector3 vectorToPlayer = (ship.location.position - transform.position).normalized;
-                Vector3 projectedToPlayer = Vector3.ProjectOnPlane(vectorToPlayer, transform.up);
+                // a vector directly to the player.
+                currentVectorToPlayer = (ship.location.position - transform.position).normalized;
 
-                newPosition = transform.position + projectedToPlayer.normalized * cruiseSpeed * Time.deltaTime;
+                // the vector projected onto the saucer's XZ plane
+                currentProjectedToPlayer = Vector3.ProjectOnPlane(currentVectorToPlayer, transform.up).normalized;
+
+                // calculate movement in projected direction
+                targetPosition = transform.position + currentProjectedToPlayer * cruiseSpeed * Time.deltaTime;
+
+                // normalize height
+                targetPosition = (targetPosition - planet.core).normalized * planet.surface.radius;
+
             }
-
-            // adjust height to be over planet
-            Vector3 heightNormalised = (newPosition - planet.core).normalized * planet.surface.radius;
-
-            rigid.MovePosition(heightNormalised);
             
+            rigid.MovePosition(targetPosition);
         }
 
 
 
-        // Public Events
+        //////////////////////////////////////////////////////////////////////////////////
+        // Events
         //
         
+        /// <summary>
+        /// Called when enemy is destroyed. See IEnemy.
+        /// </summary>
         public event EnemyDestroyedEvent destroyed;
 
 
 
-        // Public Methods
+        //////////////////////////////////////////////////////////////////////////////////
+        // Public
         //
 
+        /// <summary>
+        /// Damages the saucer by the given ammount. See IDamageable.
+        /// </summary>
+        /// <param name="damage">damage information</param>
         public void Damage(Damage damage)
         {
             // if this object is already destructing or destroyed, don't do anything
@@ -198,6 +217,10 @@ namespace SpaceGame.Actors
             }
         }
         
+        /// <summary>
+        /// Move the saucer to a new location. See IEnemy.
+        /// </summary>
+        /// <param name="location">new lcoation</param>
         public void MoveToLocation(Location location)
         {
             transform.position = location.position;
@@ -206,7 +229,8 @@ namespace SpaceGame.Actors
 
 
 
-        // Private Methods
+        //////////////////////////////////////////////////////////////////////////////////
+        // Private
         //
 
         /// <summary>

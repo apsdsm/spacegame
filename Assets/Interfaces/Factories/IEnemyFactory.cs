@@ -10,6 +10,11 @@ namespace SpaceGame.Interfaces
     public interface IEnemyFactory
     {
         /// <summary>
+        /// Called when a new enemy is created.
+        /// </summary>
+        event EnemyCreatedEvent onEnemyCreated;
+
+        /// <summary>
         /// Create and return an enemy saucer.
         /// </summary>
         /// <returns>GameObject that instantiates enemy ship prefab</returns>

@@ -20,5 +20,10 @@ namespace SpaceGame.Interfaces
         /// Should be called when enemy is destroyed.
         /// </summary>
         event EnemyDestroyedEvent destroyed;
+
+        /// <summary>
+        /// The transform for the enemy.
+        /// </summary>
+        Transform transform { get; }
     }
 }
