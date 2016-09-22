@@ -35,11 +35,18 @@ namespace SpaceGame.Controllers {
                 return;
             }
 
-            ship.AddRotationalThrust(Input.GetAxis("Horizontal"));
-
+            // shoot
             if (Input.GetButtonDown("Fire1")) {
                 ship.Shoot();
             }
+
+            // boost speed
+            if (Input.GetButton("Fire2")) {
+                ship.BoostSpeed();
+            }
+
+            // turn the ship
+            ship.Turn(Input.GetAxis("Horizontal"));
         }
 
 

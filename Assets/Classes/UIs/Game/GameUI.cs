@@ -10,20 +10,27 @@ using SpaceGame.Events;
 using Fletch;
 using System;
 
-namespace SpaceGame.UI.Game
-{
+namespace SpaceGame.UI.Game {
     /// <summary>
     /// Provides the UI for the main game.
     /// </summary>
     [RequireComponent(typeof(Animator))]
-    public class GameUI : MonoBehaviour, IGameUI
-    {
+    public class GameUI : MonoBehaviour, IGameUI {
 
         [Tooltip("The score text element")]
         public Text scoreText;
 
         [Tooltip("The time text element")]
         public Text timeText;
+
+        [Tooltip("The speed text element")]
+        public Text speedText;
+
+        [Tooltip("The wave title text element")]
+        public Text waveText;
+
+        // actors
+        private IShip ship;
 
         // services
         private IScoreService score;
@@ -41,8 +48,7 @@ namespace SpaceGame.UI.Game
         // MonoBehaviour
         //
 
-        void Awake()
-        {
+        void Awake() {
             // time service
             time = IOC.Resolve<ITimeService>();
             time.TimeUpdated += UpdateTimeText;
@@ -57,10 +63,15 @@ namespace SpaceGame.UI.Game
 
             // animator component
             animator = GetComponent<Animator>();
-            
+
             // game ready behaviour
             gameReadyBehaviour = animator.GetBehaviour<GameReadyBehaviour>();
             gameReadyBehaviour.gameUI = this;
+        }
+
+        void Start() {
+            ship = registry.LookUp<IShip>("Ship");
+            ship.onSpeedChanged += UpdateSpeedtext;
         }
 
 
@@ -69,34 +80,28 @@ namespace SpaceGame.UI.Game
         //
 
         public event EnterStateEvent onGameReady;
-    
-        public void SetWaveText(string waveTitle)
-        {
-            throw new NotImplementedException();
+
+        public void SetWaveText(string waveTitle) {
+            waveText.text = waveTitle;
         }
 
-        public void TriggerStartGame()
-        {
+        public void TriggerStartGame() {
             animator.SetTrigger("StartGame");
         }
 
-        public void TriggerGameWin()
-        {
+        public void TriggerGameWin() {
             animator.SetTrigger("ShowGameWin");
         }
-        
-        public void TriggerGameOver()
-        {
+
+        public void TriggerGameOver() {
             animator.SetTrigger("ShowGameOver");
         }
 
-        public void TriggerWaveStartAnimation()
-        {
+        public void TriggerWaveStartAnimation() {
             animator.SetTrigger("StartNewWave");
         }
 
-        public void TriggerWaveEndAnimation()
-        {
+        public void TriggerWaveEndAnimation() {
             animator.SetTrigger("ShowWaveEnd");
         }
 
@@ -115,17 +120,23 @@ namespace SpaceGame.UI.Game
         /// Update the text that shows the current score.
         /// </summary>
         /// <param name="score">new score value</param>
-        void UpdateScoreText(int score)
-        {
-            scoreText.text = score.ToString().PadLeft(8, '0');
+        void UpdateScoreText(int score) {
+            scoreText.text = score.ToString().PadLeft(5, '0');
+        }
+
+        /// <summary>
+        /// Update the text that shows the current speed.
+        /// </summary>
+        /// <param name="speed">current speed</param>
+        void UpdateSpeedtext(float speed) {
+            speedText.text = Mathf.CeilToInt(speed * 10.0f).ToString().PadLeft(5, '0');
         }
 
         /// <summary>
         /// Update the text that shows the current time.
         /// </summary>
         /// <param name="time">current time in seconds</param>
-        void UpdateTimeText(int time)
-        {
+        void UpdateTimeText(int time) {
             int seconds = time % 60;
 
             int minutes = (time - seconds) / 60;

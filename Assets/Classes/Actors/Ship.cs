@@ -2,6 +2,7 @@
 using SpaceGame.Interfaces;
 using Fletch;
 using System;
+using SpaceGame.Events;
 
 namespace SpaceGame.Actors {
 
@@ -11,34 +12,62 @@ namespace SpaceGame.Actors {
         [Tooltip("basic speed of ship")]
         public float cruiseSpeed = 20.0f;
 
-        [Tooltip("how quickly the ship starts moving")]
-        public float acceleration = 5.0f;
+        [Tooltip("top speed of ship while boosting")]
+        public float boostSpeed = 40.0f;
 
         [Tooltip("how quickly the ship can turn")]
-        public float rotation = 5.0f;
+        public float cruiseRotation = 80.0f;
+
+        [Tooltip("how quickly the ship can turn while boosting")]
+        public float boostRotation = 50.0f;
+
+        [Tooltip("how quickly the ship gets from crusing speed to top speed")]
+        public float acceleration = 5.0f;
+
+        [Tooltip("how quicly the ship gets from boosted speed back to normal speed")]
+        public float deceleration = 10.0f;
 
         [Tooltip("how far off the surface of the planet the ship should be")]
         public float distanceFromSurface = 1.0f;
 
-        private IShipController controller;
+        private IShipController controller; // sends player input to the ship
 
-        private IShootableFactory bullets;
+        private IShootableFactory bullets; // factory for ship projectiles
 
-        private IRegistryService registry;
+        private IRegistryService registry; // object registry
 
-        private IPlanet planet;
+        private IPlanet planet; // the planet the ship is bound to
 
-        private Rigidbody rigid;
+        private Rigidbody rigid; // rigid body component
 
-        private Vector3 calculatedVelocity;
+        private bool isBoosting; // true if ship is currently boosting
 
+        private float currentSpeed; // the current speed of the ship.
+
+        private float currentRotationSpeed; // the current rotational speed of the ship.
+
+        // allocate memory for heavily used variables //
+
+        // fixed update
         private Location currentLocation;
+        private Vector3 heightNormalisedPosition;
+        private Vector3 newPosition;
+
+        // update
+        private Vector3 correctUp;
+        private Vector3 currentUp;
+        private Quaternion correctRotation;
 
 
 
-        // Monobehaviour
+
+        //////////////////////////////////////////////////////////////////////////////////
+        // MonoBehaviour
         //
 
+        /// <summary>
+        /// get references to services and internal components.
+        /// </summary>
         void Awake() {
 
             // get services
@@ -54,51 +83,118 @@ namespace SpaceGame.Actors {
             // register with services and controllers
             controller.Register(this);
             registry.Register<IShip>("Ship", this);
-
         }
 
+        /// <summary>
+        /// Look up other actors.
+        /// </summary>
         void Start() {
             planet = registry.LookUp<IPlanet>("Planet");
         }
 
+        /// <summary>
+        /// Adjust the ship's rotation so that it's Y axis points directly away from planet core.
+        /// </summary>
         void Update() {
 
-            // debug rays - groovy
-            Debug.DrawRay(transform.position, transform.up * 2.0f, Color.red);
-            Debug.DrawRay(transform.position, transform.forward * 2.0f, Color.blue);
-
             // get the current up angle and the correct up angle
-            Vector3 correctUp = (transform.position - planet.core).normalized;
-            Vector3 currentUp = transform.up;
+            correctUp = (transform.position - planet.core).normalized;
+            currentUp = transform.up;
 
             // get quaternion representing the correct rotation
-            Quaternion correctRotation = Quaternion.FromToRotation(currentUp, correctUp) * transform.rotation;
+            correctRotation = Quaternion.FromToRotation(currentUp, correctUp) * transform.rotation;
 
             // slerp towards the correct rotation
             transform.rotation = Quaternion.Slerp(transform.rotation, correctRotation, 10 * Time.deltaTime);
 
             // update location orientation
             currentLocation.orientation = transform.up;
+
+            CorrectSpeed();
+
+            CorrectRotationSpeed();
+
+            // reset isBoosting
+            isBoosting = false;
+
         }
 
+        private void CorrectRotationSpeed() {
+
+            // if ship is not boosting and speed is the cruising speed, then return.
+            if (!isBoosting && currentRotationSpeed == cruiseRotation) {
+                return;
+            }
+
+            // if the ship is boosting but the speed is already at top speed, set boost to false and return
+            if (isBoosting && currentRotationSpeed == boostRotation) {
+                return;
+            }
+
+            // if boosting but not yet at top speed
+            if (isBoosting && currentRotationSpeed < boostRotation) {
+                currentRotationSpeed -= acceleration * Time.deltaTime;
+            }
+
+            // if not boosting but speed faster than cruisting speed
+            if (!isBoosting && currentRotationSpeed > cruiseRotation) {
+                currentRotationSpeed += deceleration * Time.deltaTime;
+            }
+
+            // make sure speed is inside range
+            currentRotationSpeed = Mathf.Clamp(currentRotationSpeed, cruiseRotation, boostRotation);
+            
+        }
+
+        private void CorrectSpeed() {
+
+            // if ship is not boosting and speed is the cruising speed, then return.
+            if (!isBoosting && currentSpeed == cruiseSpeed) {
+                return;
+            }
+
+            // if the ship is boosting but the speed is already at top speed, set boost to false and return
+            if (isBoosting && currentSpeed == boostSpeed) {
+                return;
+            }
+
+            // if boosting but not yet at top speed
+            if (isBoosting && currentSpeed < boostSpeed) { 
+                currentSpeed += acceleration * Time.deltaTime;              
+            }
+
+            // if not boosting but speed faster than cruisting speed
+            if (!isBoosting && currentSpeed > cruiseSpeed) {
+                currentSpeed -= deceleration * Time.deltaTime;
+            }
+
+            // make sure speed is inside range
+            currentSpeed = Mathf.Clamp(currentSpeed, cruiseSpeed, boostSpeed);
+
+            CallOnSpeedChange(currentSpeed);
+        }
+
+        /// <summary>
+        /// Change the ship's position on the planet.
+        /// </summary>
         void FixedUpdate() {
 
             // get a new forward position
-            Vector3 newPosition = transform.position + (transform.forward * cruiseSpeed * Time.deltaTime);
+            newPosition = transform.position + (transform.forward * currentSpeed * Time.deltaTime);
 
             // adjust height to be over planet
-            Vector3 heightNormalised = (newPosition - planet.core).normalized * (planet.surface.radius);
-
-            // get new velocity
-            calculatedVelocity = (heightNormalised - transform.position).normalized * cruiseSpeed;
+            heightNormalisedPosition = (newPosition - planet.core).normalized * (planet.surface.radius);
 
             // move to new position
-            rigid.MovePosition(heightNormalised);
+            rigid.MovePosition(heightNormalisedPosition);
 
             // update location position
             currentLocation.position = transform.position;
         }
 
+        /// <summary>
+        /// Deregister ship from services and controllers.
+        /// </summary>
         public void OnDestroy() {
             registry.Deregister<Ship>("Ship");
             controller.Deregister(this);
@@ -106,28 +202,72 @@ namespace SpaceGame.Actors {
 
 
 
-        // IShip
+
+        //////////////////////////////////////////////////////////////////////////////////
+        // Events
         //
 
+        /// <summary>
+        /// Called when the ship changes speed. See IShip.
+        /// </summary>
+        public event SpeedChangedEvent onSpeedChanged;
+
+
+
+
+        //////////////////////////////////////////////////////////////////////////////////
+        // Getters / Setters
+        //
+
+        /// <summary>
+        /// Current location of ship. See IShip
+        /// </summary>
         public Location location { get { return currentLocation; } }
 
-        public Vector3 velocity {  get { return transform.forward; } }
 
-        public Vector3 right { get { return transform.right; } }
 
-        public Vector3 forward { get { return transform.forward; } }
 
-        public void AddLongitudinalThrust(float thrust) {
-            rigid.AddForce(transform.forward * thrust * acceleration);
+        //////////////////////////////////////////////////////////////////////////////////
+        // Public Methods
+        //
+
+        /// <summary>
+        /// Rotate the ship on an axis running from the ships position to the planet core. See IShip.
+        /// </summary>
+        /// <param name="thrust"></param>
+        public void Turn(float thrust) {
+            transform.RotateAround(transform.position, transform.up, (thrust * currentRotationSpeed) * Time.deltaTime);
         }
-                
-        public void AddRotationalThrust(float thrust) {
-            transform.RotateAround(transform.position, transform.up, (thrust * rotation) * Time.deltaTime);
+
+        /// <summary>
+        /// Make the ship fly faster, but reduce turning speed.
+        /// </summary>
+        public void BoostSpeed() {
+            isBoosting = true;
         }
 
+        /// <summary>
+        /// Shoot projectile from ship. See IShip.
+        /// </summary>
         public void Shoot() {
             bullets.CreatePlayerBullet().Shoot(transform.position, transform.forward, planet.core);
         }
 
+
+
+
+        //////////////////////////////////////////////////////////////////////////////////
+        // Private Methods
+        //
+
+        /// <summary>
+        /// Call the onSpeedChanged event if there are any subscribers.
+        /// </summary>
+        /// <param name="speed">new speed</param>
+        private void CallOnSpeedChange(float speed) {
+            if (onSpeedChanged != null) {
+                onSpeedChanged(speed);
+            }
+        }
     }
 }

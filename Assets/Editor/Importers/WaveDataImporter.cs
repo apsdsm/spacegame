@@ -1,4 +1,5 @@
 ﻿using DataHelpers.Interfaces;
+using System;
 
 namespace SpaceGame.Importers
 {
@@ -6,13 +7,15 @@ namespace SpaceGame.Importers
     {
         public void Import (WaveData asset, ReadBundle readBundle)
         {
+            asset.startTime =  Convert.ToInt32(readBundle.vars["startTime"]);
+
             asset.waves = new WaveData.Wave[readBundle.validatedNodes.Count];
 
             for (int i = 0; i < readBundle.validatedNodes.Count; i++)
             {
-                asset.waves[0] = new WaveData.Wave();
-                asset.waves[0].saucers = readBundle.validatedNodes[i].AsInt32("Saucers");
-                asset.waves[0].time = readBundle.validatedNodes[i].AsInt32("Time");
+                asset.waves[i] = new WaveData.Wave();
+                asset.waves[i].saucers = readBundle.validatedNodes[i].AsInt32("Saucers");
+                asset.waves[i].time = readBundle.validatedNodes[i].AsInt32("Time");
             }
         }
     }

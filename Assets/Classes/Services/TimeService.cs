@@ -4,8 +4,7 @@ using SpaceGame.Interfaces;
 using System;
 using SpaceGame.Events;
 
-public class TimeService : MonoBehaviour, ITimeService
-{
+public class TimeService : MonoBehaviour, ITimeService {
     // true if the countdown is playing
     private bool isActive = false;
 
@@ -14,18 +13,19 @@ public class TimeService : MonoBehaviour, ITimeService
 
     // countdown as whole seconds
     private int lastWholeSecond;
-    
+
     // broadcast whe the countdown updates (once per second)
     public event TimeUpdatedEvent TimeUpdated;
 
     // broadcast when the countdown finishes
     public event CountdownFinishedEvent CountdownFinished;
 
+    private float addTime = 0.0f;
+
     /// <summary>
     /// Return the current time in whole seconds.
     /// </summary>
-    public int currentTime
-    {
+    public int currentTime {
         get { return lastWholeSecond; }
     }
 
@@ -33,10 +33,9 @@ public class TimeService : MonoBehaviour, ITimeService
     /// Set the countdown to a specific time.
     /// </summary>
     /// <param name="seconds"></param>
-    public void SetCountdown(int seconds)
-    {
+    public void SetCountdown(int seconds) {
         time = (float)seconds;
-        lastWholeSecond = (int)Math.Ceiling(time);
+        lastWholeSecond = Mathf.CeilToInt(time);
         OnTimeUpdated();
     }
 
@@ -44,37 +43,43 @@ public class TimeService : MonoBehaviour, ITimeService
     /// Add seconds to the countdown.
     /// </summary>
     /// <param name="seconds"></param>
-    public void AddSeconds(int seconds)
-    {
-        time += (float)seconds;
-        lastWholeSecond = (int)Math.Ceiling(time);
+    public void AddSeconds(int seconds) {
+        addTime += (float)seconds;
+        lastWholeSecond = Mathf.CeilToInt(time);
         OnTimeUpdated();
     }
 
     /// <summary>
     /// Pauses the countdown.
     /// </summary>
-    public void PauseCountdown()
-    {
+    public void PauseCountdown() {
         isActive = false;
     }
 
     /// <summary>
     /// Starts the countdown playing.
     /// </summary>
-    public void StartCountdown()
-    {
+    public void StartCountdown() {
         isActive = true;
     }
 
     /// <summary>
     /// Update the countdown and broadcast events.
     /// </summary>
-    void Update()
-    {
+    void Update() {
         if (isActive) {
+
+            if (addTime > 0.0f) {
+                time += addTime;
+                addTime = 0.0f;
+                lastWholeSecond = Mathf.CeilToInt(time);
+                OnTimeUpdated();
+            }
+
             time -= Time.deltaTime;
 
+            int ceilTime = Mathf.CeilToInt(time);
+                        
             if (time <= 0) {
                 isActive = false;
                 time = 0;
@@ -83,8 +88,8 @@ public class TimeService : MonoBehaviour, ITimeService
                 OnTimeUpdated();
                 OnCountdownFinished();
 
-            } else if ((int)Math.Ceiling(time) < lastWholeSecond) {
-                lastWholeSecond = (int)Math.Ceiling(time);
+            } else if (ceilTime < lastWholeSecond) {
+                lastWholeSecond = ceilTime;
                 OnTimeUpdated();
             }
         }
@@ -93,8 +98,7 @@ public class TimeService : MonoBehaviour, ITimeService
     /// <summary>
     /// Call the TimeUpdated event if there are any subscribers.
     /// </summary>
-    void OnTimeUpdated()
-    {
+    void OnTimeUpdated() {
         if (TimeUpdated != null) {
             TimeUpdated(lastWholeSecond);
         }
@@ -103,8 +107,7 @@ public class TimeService : MonoBehaviour, ITimeService
     /// <summary>
     /// Call the CountdownFinished event if there are any subscribers.
     /// </summary>
-    void OnCountdownFinished()
-    {
+    void OnCountdownFinished() {
         if (CountdownFinished != null) {
             CountdownFinished();
         }

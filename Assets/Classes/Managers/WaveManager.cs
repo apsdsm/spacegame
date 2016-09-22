@@ -16,9 +16,6 @@ namespace SpaceGame.Actors {
         [Tooltip("data about the waves in the game")]
         public WaveData waveData;
 
-        [Tooltip("how much time to grant as bonus after wave ends")]
-        public int bonusTimeAfterWave = 10;
-
         // Factories
         private IEnemyFactory enemies;
 
@@ -54,13 +51,7 @@ namespace SpaceGame.Actors {
         /// Set up internal data objects. Resolve references to services.
         /// </summary>
         void Awake() {
-
-            // initialize wave info
-            currentWaveIndex = 0;
-
-            // get pointer to current wave
-            currentWave = waveData.waves[0];
-
+            
             // create new list to hold enemy references
             enemyList = new List<IEnemy>();
 
@@ -70,6 +61,15 @@ namespace SpaceGame.Actors {
             registry = IOC.Resolve<IRegistryService>();
             shipController = IOC.Resolve<IShipController>();
             endGameController = IOC.Resolve<IEndGameController>();
+
+            // initialize wave info
+            currentWaveIndex = 0;
+
+            // get pointer to current wave
+            currentWave = waveData.waves[0];
+
+            // set start time on countdown
+            time.SetCountdown(waveData.startTime);
         }
 
         /// <summary>
@@ -169,9 +169,11 @@ namespace SpaceGame.Actors {
             } else {
                 time.PauseCountdown();
 
-                time.AddSeconds(bonusTimeAfterWave);
+                time.AddSeconds(currentWave.time);
 
                 currentWaveIndex++;
+
+                gameUI.SetWaveText("Wave " + (currentWaveIndex + 1).ToString());
 
                 currentWave = waveData.waves[currentWaveIndex];
 

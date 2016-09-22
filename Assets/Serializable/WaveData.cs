@@ -10,6 +10,8 @@ namespace SpaceGame
     [Serializable]
     public class WaveData : ScriptableObject
     {
+        public int startTime;
+
         /// <summary>
         /// A single wave held by wave data
         /// </summary>
